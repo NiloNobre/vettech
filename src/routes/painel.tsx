@@ -89,9 +89,10 @@ function PainelTV() {
           <ul className="space-y-3">
             {waiting.slice(0, 8).map((r) => (
               <li key={r.id} className="bg-sidebar/40 rounded-xl px-4 py-3">
-                <div className="font-semibold text-lg">{r.patients?.name}</div>
-                <div className="text-xs opacity-70">{r.patients?.species}</div>
-                <div className="text-xs opacity-60 mt-0.5">Tutor: {r.patients?.clients?.full_name ?? "—"}</div>
+                <div className="font-semibold text-lg">{r.patient_name}</div>
+                <div className="text-xs opacity-70">{r.patient_species}</div>
+                <div className="text-xs opacity-60 mt-0.5">Tutor: {r.tutor_name ?? "—"}</div>
+
               </li>
             ))}
             {waiting.length === 0 && <li className="opacity-60 text-sm">Nenhum paciente aguardando.</li>}
