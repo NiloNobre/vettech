@@ -29,7 +29,7 @@ function PainelTV() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("queue")
-        .select("id, status, room, called_at, patients(name, species)")
+        .select("id, status, room, called_at, patients(name, species, clients(full_name))")
         .in("status", ["waiting", "called"])
         .order("called_at", { ascending: false, nullsFirst: false })
         .order("created_at");
