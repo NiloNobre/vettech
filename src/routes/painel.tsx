@@ -9,7 +9,15 @@ export const Route = createFileRoute("/painel")({
   component: PainelTV,
 });
 
-interface Row { id: string; status: string; room: string | null; called_at: string | null; patients?: { name: string; species: string; clients?: { full_name: string } | null } | null; }
+interface Row {
+  id: string;
+  status: string;
+  room: string | null;
+  called_at: string | null;
+  patient_name: string | null;
+  patient_species: string | null;
+  tutor_name: string | null;
+}
 
 function PainelTV() {
   const qc = useQueryClient();
@@ -28,8 +36,8 @@ function PainelTV() {
     queryKey: ["queue-tv"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("queue")
-        .select("id, status, room, called_at, patients(name, species, clients(full_name))")
+        .from("queue_panel")
+        .select("id, status, room, called_at, patient_name, patient_species, tutor_name")
         .in("status", ["waiting", "called"])
         .order("called_at", { ascending: false, nullsFirst: false })
         .order("created_at");
@@ -63,9 +71,10 @@ function PainelTV() {
           {current ? (
             <>
               <div className="text-xl opacity-70 uppercase tracking-widest mb-4 animate-pulse">Chamando agora</div>
-              <div className="text-6xl md:text-8xl font-extrabold mb-2">{current.patients?.name}</div>
-              <div className="text-2xl opacity-80 mb-1">{current.patients?.species}</div>
-              <div className="text-xl opacity-70 mb-8">Tutor(a): <span className="font-semibold">{current.patients?.clients?.full_name ?? "—"}</span></div>
+              <div className="text-6xl md:text-8xl font-extrabold mb-2">{current.patient_name ?? "—"}</div>
+              <div className="text-2xl opacity-80 mb-1">{current.patient_species}</div>
+              <div className="text-xl opacity-70 mb-8">Tutor(a): <span className="font-semibold">{current.tutor_name ?? "—"}</span></div>
+
               <div className="inline-block bg-sidebar-primary text-sidebar-primary-foreground text-4xl font-bold px-8 py-4 rounded-2xl">
                 → {current.room ?? "Consultório"}
               </div>
@@ -80,9 +89,10 @@ function PainelTV() {
           <ul className="space-y-3">
             {waiting.slice(0, 8).map((r) => (
               <li key={r.id} className="bg-sidebar/40 rounded-xl px-4 py-3">
-                <div className="font-semibold text-lg">{r.patients?.name}</div>
-                <div className="text-xs opacity-70">{r.patients?.species}</div>
-                <div className="text-xs opacity-60 mt-0.5">Tutor: {r.patients?.clients?.full_name ?? "—"}</div>
+                <div className="font-semibold text-lg">{r.patient_name}</div>
+                <div className="text-xs opacity-70">{r.patient_species}</div>
+                <div className="text-xs opacity-60 mt-0.5">Tutor: {r.tutor_name ?? "—"}</div>
+
               </li>
             ))}
             {waiting.length === 0 && <li className="opacity-60 text-sm">Nenhum paciente aguardando.</li>}
