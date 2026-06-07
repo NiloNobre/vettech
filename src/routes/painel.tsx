@@ -9,7 +9,15 @@ export const Route = createFileRoute("/painel")({
   component: PainelTV,
 });
 
-interface Row { id: string; status: string; room: string | null; called_at: string | null; patients?: { name: string; species: string; clients?: { full_name: string } | null } | null; }
+interface Row {
+  id: string;
+  status: string;
+  room: string | null;
+  called_at: string | null;
+  patient_name: string | null;
+  patient_species: string | null;
+  tutor_name: string | null;
+}
 
 function PainelTV() {
   const qc = useQueryClient();
@@ -27,41 +35,17 @@ function PainelTV() {
   const { data = [] } = useQuery({
     queryKey: ["queue-tv"],
     queryFn: async () => {
-      const { data: q, error } = await supabase
-        .from("queue")
-        .select("id, status, room, called_at, patient_id")
+      const { data, error } = await supabase
+        .from("queue_panel")
+        .select("id, status, room, called_at, patient_name, patient_species, tutor_name")
         .in("status", ["waiting", "called"])
         .order("called_at", { ascending: false, nullsFirst: false })
         .order("created_at");
       if (error) throw error;
-      const rows = q ?? [];
-      const patientIds = Array.from(new Set(rows.map((r) => r.patient_id).filter(Boolean)));
-      if (patientIds.length === 0) return [] as Row[];
-      const { data: pats } = await supabase
-        .from("patients")
-        .select("id, name, species, client_id")
-        .in("id", patientIds);
-      const clientIds = Array.from(new Set((pats ?? []).map((p) => p.client_id).filter(Boolean)));
-      const { data: cls } = clientIds.length
-        ? await supabase.from("clients").select("id, full_name").in("id", clientIds)
-        : { data: [] as { id: string; full_name: string }[] };
-      const patMap = new Map((pats ?? []).map((p) => [p.id, p]));
-      const clMap = new Map((cls ?? []).map((c) => [c.id, c]));
-      return rows.map((r) => {
-        const p = patMap.get(r.patient_id);
-        const c = p ? clMap.get(p.client_id) : undefined;
-        return {
-          id: r.id,
-          status: r.status,
-          room: r.room,
-          called_at: r.called_at,
-          patients: p ? { name: p.name, species: p.species, clients: c ? { full_name: c.full_name } : null } : null,
-        } as Row;
-      });
+      return (data ?? []) as Row[];
     },
     refetchInterval: 5000,
   });
-
 
   const called = data.filter((r) => r.status === "called");
   const waiting = data.filter((r) => r.status === "waiting");
@@ -87,9 +71,10 @@ function PainelTV() {
           {current ? (
             <>
               <div className="text-xl opacity-70 uppercase tracking-widest mb-4 animate-pulse">Chamando agora</div>
-              <div className="text-6xl md:text-8xl font-extrabold mb-2">{current.patients?.name}</div>
-              <div className="text-2xl opacity-80 mb-1">{current.patients?.species}</div>
-              <div className="text-xl opacity-70 mb-8">Tutor(a): <span className="font-semibold">{current.patients?.clients?.full_name ?? "—"}</span></div>
+              <div className="text-6xl md:text-8xl font-extrabold mb-2">{current.patient_name ?? "—"}</div>
+              <div className="text-2xl opacity-80 mb-1">{current.patient_species}</div>
+              <div className="text-xl opacity-70 mb-8">Tutor(a): <span className="font-semibold">{current.tutor_name ?? "—"}</span></div>
+
               <div className="inline-block bg-sidebar-primary text-sidebar-primary-foreground text-4xl font-bold px-8 py-4 rounded-2xl">
                 → {current.room ?? "Consultório"}
               </div>
