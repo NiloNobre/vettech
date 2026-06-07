@@ -4,14 +4,29 @@ import { LayoutDashboard, Users, PawPrint, ClipboardList, Package, Monitor, LogO
 import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
 
-const nav = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/queue", label: "Fila de Chamada", icon: Monitor },
-  { to: "/clients", label: "Clientes", icon: Users },
-  { to: "/patients", label: "Pacientes", icon: PawPrint },
-  { to: "/prontuarios", label: "Prontuários", icon: ClipboardList },
-  { to: "/products", label: "Estoque", icon: Package },
+type NavItem = { to: string; label: string; icon: typeof LayoutDashboard };
+type NavGroup = { label?: string; items: NavItem[] };
+
+const groups: NavGroup[] = [
+  { items: [{ to: "/dashboard", label: "Dashboard", icon: LayoutDashboard }] },
+  {
+    label: "Recepção",
+    items: [
+      { to: "/clients", label: "Clientes", icon: Users },
+      { to: "/patients", label: "Pacientes", icon: PawPrint },
+    ],
+  },
+  {
+    label: "Atendimento",
+    items: [
+      { to: "/queue", label: "Fila de Chamada", icon: Monitor },
+      { to: "/prontuarios", label: "Prontuários", icon: ClipboardList },
+    ],
+  },
+  { label: "Gestão", items: [{ to: "/products", label: "Estoque", icon: Package }] },
 ];
+
+const allItems = groups.flatMap((g) => g.items);
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, signOut } = useAuth();
@@ -25,20 +40,29 @@ export function AppShell({ children }: { children: ReactNode }) {
             <PawPrint className="w-5 h-5 text-sidebar-primary-foreground" />
           </div>
           <div>
-            <div className="font-semibold">VetClinic</div>
-            <div className="text-xs opacity-70">Gestão veterinária</div>
+            <div className="font-semibold">SCV</div>
+            <div className="text-xs opacity-70">Sistema para Clínicas Veterinárias</div>
           </div>
         </div>
-        <nav className="flex-1 p-3 space-y-1">
-          {nav.map((item) => {
-            const active = pathname.startsWith(item.to);
-            return (
-              <Link key={item.to} to={item.to}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition ${active ? "bg-sidebar-primary text-sidebar-primary-foreground" : "hover:bg-sidebar-accent"}`}>
-                <item.icon className="w-4 h-4" />{item.label}
-              </Link>
-            );
-          })}
+        <nav className="flex-1 p-3 space-y-3 overflow-auto">
+          {groups.map((g, gi) => (
+            <div key={gi} className="space-y-1">
+              {g.label && (
+                <div className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider opacity-60">
+                  {g.label}
+                </div>
+              )}
+              {g.items.map((item) => {
+                const active = pathname.startsWith(item.to);
+                return (
+                  <Link key={item.to} to={item.to}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition ${active ? "bg-sidebar-primary text-sidebar-primary-foreground" : "hover:bg-sidebar-accent"}`}>
+                    <item.icon className="w-4 h-4" />{item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
           <a href="/painel" target="_blank" rel="noreferrer"
              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-sidebar-accent">
             <Tv className="w-4 h-4" /> Painel TV
@@ -54,12 +78,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="flex-1 overflow-auto">
         <div className="md:hidden flex items-center justify-between p-4 bg-sidebar text-sidebar-foreground">
           <div className="flex items-center gap-2">
-            <PawPrint className="w-5 h-5" /><span className="font-semibold">VetClinic</span>
+            <PawPrint className="w-5 h-5" /><span className="font-semibold">SCV</span>
           </div>
           <Button variant="secondary" size="sm" onClick={() => signOut()}>Sair</Button>
         </div>
         <div className="md:hidden border-b overflow-x-auto whitespace-nowrap p-2 bg-card">
-          {nav.map((it) => (
+          {allItems.map((it) => (
             <Link key={it.to} to={it.to} className="inline-block px-3 py-1.5 mr-1 rounded-md text-xs bg-secondary text-secondary-foreground">
               {it.label}
             </Link>
