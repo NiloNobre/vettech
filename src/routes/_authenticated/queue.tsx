@@ -45,8 +45,9 @@ function QueuePage() {
     },
   });
 
+  type QueuePatch = Partial<{ status: "waiting" | "called" | "in_consult" | "done" | "cancelled"; room: string | null; called_at: string | null }>;
   const update = useMutation({
-    mutationFn: async ({ id, patch }: { id: string; patch: Record<string, unknown> }) => {
+    mutationFn: async ({ id, patch }: { id: string; patch: QueuePatch }) => {
       const { error } = await supabase.from("queue").update(patch).eq("id", id);
       if (error) throw error;
     },
