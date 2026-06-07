@@ -63,8 +63,9 @@ function PainelTV() {
           {current ? (
             <>
               <div className="text-xl opacity-70 uppercase tracking-widest mb-4 animate-pulse">Chamando agora</div>
-              <div className="text-6xl md:text-8xl font-extrabold mb-4">{current.patients?.name}</div>
-              <div className="text-2xl opacity-80 mb-8">{current.patients?.species}</div>
+              <div className="text-6xl md:text-8xl font-extrabold mb-2">{current.patients?.name}</div>
+              <div className="text-2xl opacity-80 mb-1">{current.patients?.species}</div>
+              <div className="text-xl opacity-70 mb-8">Tutor(a): <span className="font-semibold">{current.patients?.clients?.full_name ?? "—"}</span></div>
               <div className="inline-block bg-sidebar-primary text-sidebar-primary-foreground text-4xl font-bold px-8 py-4 rounded-2xl">
                 → {current.room ?? "Consultório"}
               </div>
