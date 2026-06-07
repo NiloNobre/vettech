@@ -9,7 +9,7 @@ export const Route = createFileRoute("/painel")({
   component: PainelTV,
 });
 
-interface Row { id: string; status: string; room: string | null; called_at: string | null; patients?: { name: string; species: string } | null; }
+interface Row { id: string; status: string; room: string | null; called_at: string | null; patients?: { name: string; species: string; clients?: { full_name: string } | null } | null; }
 
 function PainelTV() {
   const qc = useQueryClient();
