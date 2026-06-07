@@ -51,7 +51,7 @@ function PainelTV() {
             <PawPrint className="w-7 h-7 text-sidebar-primary-foreground" />
           </div>
           <div>
-            <div className="text-2xl font-bold">VetClinic</div>
+            <div className="text-2xl font-bold">SCV</div>
             <div className="text-sm opacity-70">Painel de chamada</div>
           </div>
         </div>
