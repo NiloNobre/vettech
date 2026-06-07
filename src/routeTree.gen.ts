@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PainelRouteImport } from './routes/painel'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
@@ -18,7 +19,13 @@ import { Route as AuthenticatedPatientsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticated/clients'
 import { Route as AuthenticatedProntuariosIndexRouteImport } from './routes/_authenticated/prontuarios.index'
+import { Route as AuthenticatedProntuariosPatientIdRouteImport } from './routes/_authenticated/prontuarios.$patientId'
 
+const PainelRoute = PainelRouteImport.update({
+  id: '/painel',
+  path: '/painel',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -64,25 +71,35 @@ const AuthenticatedProntuariosIndexRoute =
     path: '/prontuarios/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedProntuariosPatientIdRoute =
+  AuthenticatedProntuariosPatientIdRouteImport.update({
+    id: '/prontuarios/$patientId',
+    path: '/prontuarios/$patientId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/painel': typeof PainelRoute
   '/clients': typeof AuthenticatedClientsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/patients': typeof AuthenticatedPatientsRoute
   '/products': typeof AuthenticatedProductsRoute
   '/queue': typeof AuthenticatedQueueRoute
+  '/prontuarios/$patientId': typeof AuthenticatedProntuariosPatientIdRoute
   '/prontuarios/': typeof AuthenticatedProntuariosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/painel': typeof PainelRoute
   '/clients': typeof AuthenticatedClientsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/patients': typeof AuthenticatedPatientsRoute
   '/products': typeof AuthenticatedProductsRoute
   '/queue': typeof AuthenticatedQueueRoute
+  '/prontuarios/$patientId': typeof AuthenticatedProntuariosPatientIdRoute
   '/prontuarios': typeof AuthenticatedProntuariosIndexRoute
 }
 export interface FileRoutesById {
@@ -90,11 +107,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
+  '/painel': typeof PainelRoute
   '/_authenticated/clients': typeof AuthenticatedClientsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/patients': typeof AuthenticatedPatientsRoute
   '/_authenticated/products': typeof AuthenticatedProductsRoute
   '/_authenticated/queue': typeof AuthenticatedQueueRoute
+  '/_authenticated/prontuarios/$patientId': typeof AuthenticatedProntuariosPatientIdRoute
   '/_authenticated/prontuarios/': typeof AuthenticatedProntuariosIndexRoute
 }
 export interface FileRouteTypes {
@@ -102,32 +121,38 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/painel'
     | '/clients'
     | '/dashboard'
     | '/patients'
     | '/products'
     | '/queue'
+    | '/prontuarios/$patientId'
     | '/prontuarios/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/painel'
     | '/clients'
     | '/dashboard'
     | '/patients'
     | '/products'
     | '/queue'
+    | '/prontuarios/$patientId'
     | '/prontuarios'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/painel'
     | '/_authenticated/clients'
     | '/_authenticated/dashboard'
     | '/_authenticated/patients'
     | '/_authenticated/products'
     | '/_authenticated/queue'
+    | '/_authenticated/prontuarios/$patientId'
     | '/_authenticated/prontuarios/'
   fileRoutesById: FileRoutesById
 }
@@ -135,10 +160,18 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
+  PainelRoute: typeof PainelRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/painel': {
+      id: '/painel'
+      path: '/painel'
+      fullPath: '/painel'
+      preLoaderRoute: typeof PainelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -202,6 +235,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProntuariosIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/prontuarios/$patientId': {
+      id: '/_authenticated/prontuarios/$patientId'
+      path: '/prontuarios/$patientId'
+      fullPath: '/prontuarios/$patientId'
+      preLoaderRoute: typeof AuthenticatedProntuariosPatientIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
@@ -211,6 +251,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPatientsRoute: typeof AuthenticatedPatientsRoute
   AuthenticatedProductsRoute: typeof AuthenticatedProductsRoute
   AuthenticatedQueueRoute: typeof AuthenticatedQueueRoute
+  AuthenticatedProntuariosPatientIdRoute: typeof AuthenticatedProntuariosPatientIdRoute
   AuthenticatedProntuariosIndexRoute: typeof AuthenticatedProntuariosIndexRoute
 }
 
@@ -220,6 +261,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPatientsRoute: AuthenticatedPatientsRoute,
   AuthenticatedProductsRoute: AuthenticatedProductsRoute,
   AuthenticatedQueueRoute: AuthenticatedQueueRoute,
+  AuthenticatedProntuariosPatientIdRoute:
+    AuthenticatedProntuariosPatientIdRoute,
   AuthenticatedProntuariosIndexRoute: AuthenticatedProntuariosIndexRoute,
 }
 
@@ -231,7 +274,18 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
+  PainelRoute: PainelRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
