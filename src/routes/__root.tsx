@@ -50,7 +50,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "VetClinic — Sistema Veterinário" },
+      { title: "SCV — Sistema para Clínicas Veterinárias" },
       { name: "description", content: "Sistema completo para clínicas veterinárias: pacientes, prontuário, estoque e painel de chamada." },
     ],
     links: [{ rel: "stylesheet", href: appCss }],

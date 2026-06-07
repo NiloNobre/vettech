@@ -9,7 +9,7 @@ export const Route = createFileRoute("/painel")({
   component: PainelTV,
 });
 
-interface Row { id: string; status: string; room: string | null; called_at: string | null; patients?: { name: string; species: string } | null; }
+interface Row { id: string; status: string; room: string | null; called_at: string | null; patients?: { name: string; species: string; clients?: { full_name: string } | null } | null; }
 
 function PainelTV() {
   const qc = useQueryClient();
@@ -29,7 +29,7 @@ function PainelTV() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("queue")
-        .select("id, status, room, called_at, patients(name, species)")
+        .select("id, status, room, called_at, patients(name, species, clients(full_name))")
         .in("status", ["waiting", "called"])
         .order("called_at", { ascending: false, nullsFirst: false })
         .order("created_at");
@@ -51,7 +51,7 @@ function PainelTV() {
             <PawPrint className="w-7 h-7 text-sidebar-primary-foreground" />
           </div>
           <div>
-            <div className="text-2xl font-bold">VetClinic</div>
+            <div className="text-2xl font-bold">SCV</div>
             <div className="text-sm opacity-70">Painel de chamada</div>
           </div>
         </div>
@@ -63,8 +63,9 @@ function PainelTV() {
           {current ? (
             <>
               <div className="text-xl opacity-70 uppercase tracking-widest mb-4 animate-pulse">Chamando agora</div>
-              <div className="text-6xl md:text-8xl font-extrabold mb-4">{current.patients?.name}</div>
-              <div className="text-2xl opacity-80 mb-8">{current.patients?.species}</div>
+              <div className="text-6xl md:text-8xl font-extrabold mb-2">{current.patients?.name}</div>
+              <div className="text-2xl opacity-80 mb-1">{current.patients?.species}</div>
+              <div className="text-xl opacity-70 mb-8">Tutor(a): <span className="font-semibold">{current.patients?.clients?.full_name ?? "—"}</span></div>
               <div className="inline-block bg-sidebar-primary text-sidebar-primary-foreground text-4xl font-bold px-8 py-4 rounded-2xl">
                 → {current.room ?? "Consultório"}
               </div>
@@ -81,6 +82,7 @@ function PainelTV() {
               <li key={r.id} className="bg-sidebar/40 rounded-xl px-4 py-3">
                 <div className="font-semibold text-lg">{r.patients?.name}</div>
                 <div className="text-xs opacity-70">{r.patients?.species}</div>
+                <div className="text-xs opacity-60 mt-0.5">Tutor: {r.patients?.clients?.full_name ?? "—"}</div>
               </li>
             ))}
             {waiting.length === 0 && <li className="opacity-60 text-sm">Nenhum paciente aguardando.</li>}

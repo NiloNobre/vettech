@@ -100,8 +100,11 @@ function QueuePage() {
                   </Button>
                 )}
                 {q.status === "called" && (
-                  <Button size="sm" variant="secondary" onClick={() => update.mutate({ id: q.id, patch: { status: "in_consult" } })}>
-                    <Check className="w-4 h-4 mr-1" /> Iniciar
+                  <Button size="sm" variant="secondary" onClick={() => {
+                    update.mutate({ id: q.id, patch: { status: "in_consult" } });
+                    window.open(`/prontuarios/${q.patient_id}`, "_blank");
+                  }}>
+                    <Check className="w-4 h-4 mr-1" /> Iniciar consulta
                   </Button>
                 )}
                 {q.status === "in_consult" && (

@@ -24,7 +24,7 @@ function AuthPage() {
           <div className="mx-auto w-14 h-14 rounded-2xl bg-primary flex items-center justify-center mb-2">
             <PawPrint className="w-7 h-7 text-primary-foreground" />
           </div>
-          <CardTitle className="text-2xl">VetClinic</CardTitle>
+          <CardTitle className="text-2xl">SCV</CardTitle>
           <CardDescription>Sistema para clínicas veterinárias</CardDescription>
         </CardHeader>
         <CardContent>
