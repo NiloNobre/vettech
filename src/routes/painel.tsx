@@ -82,6 +82,7 @@ function PainelTV() {
               <li key={r.id} className="bg-sidebar/40 rounded-xl px-4 py-3">
                 <div className="font-semibold text-lg">{r.patients?.name}</div>
                 <div className="text-xs opacity-70">{r.patients?.species}</div>
+                <div className="text-xs opacity-60 mt-0.5">Tutor: {r.patients?.clients?.full_name ?? "—"}</div>
               </li>
             ))}
             {waiting.length === 0 && <li className="opacity-60 text-sm">Nenhum paciente aguardando.</li>}
