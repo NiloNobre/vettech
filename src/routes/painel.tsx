@@ -27,17 +27,41 @@ function PainelTV() {
   const { data = [] } = useQuery({
     queryKey: ["queue-tv"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: q, error } = await supabase
         .from("queue")
-        .select("id, status, room, called_at, patients(name, species, clients(full_name))")
+        .select("id, status, room, called_at, patient_id")
         .in("status", ["waiting", "called"])
         .order("called_at", { ascending: false, nullsFirst: false })
         .order("created_at");
       if (error) throw error;
-      return (data ?? []) as Row[];
+      const rows = q ?? [];
+      const patientIds = Array.from(new Set(rows.map((r) => r.patient_id).filter(Boolean)));
+      if (patientIds.length === 0) return [] as Row[];
+      const { data: pats } = await supabase
+        .from("patients")
+        .select("id, name, species, client_id")
+        .in("id", patientIds);
+      const clientIds = Array.from(new Set((pats ?? []).map((p) => p.client_id).filter(Boolean)));
+      const { data: cls } = clientIds.length
+        ? await supabase.from("clients").select("id, full_name").in("id", clientIds)
+        : { data: [] as { id: string; full_name: string }[] };
+      const patMap = new Map((pats ?? []).map((p) => [p.id, p]));
+      const clMap = new Map((cls ?? []).map((c) => [c.id, c]));
+      return rows.map((r) => {
+        const p = patMap.get(r.patient_id);
+        const c = p ? clMap.get(p.client_id) : undefined;
+        return {
+          id: r.id,
+          status: r.status,
+          room: r.room,
+          called_at: r.called_at,
+          patients: p ? { name: p.name, species: p.species, clients: c ? { full_name: c.full_name } : null } : null,
+        } as Row;
+      });
     },
     refetchInterval: 5000,
   });
+
 
   const called = data.filter((r) => r.status === "called");
   const waiting = data.filter((r) => r.status === "waiting");
