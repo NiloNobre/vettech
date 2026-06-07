@@ -343,7 +343,19 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      queue_panel: {
+        Row: {
+          called_at: string | null
+          created_at: string | null
+          id: string | null
+          patient_name: string | null
+          patient_species: string | null
+          room: string | null
+          status: Database["public"]["Enums"]["queue_status"] | null
+          tutor_name: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
