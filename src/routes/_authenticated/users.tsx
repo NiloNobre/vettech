@@ -70,6 +70,10 @@ function UsersPage() {
     return arr.includes(r) ? arr.filter((x) => x !== r) : [...arr, r];
   }
 
+  if (!isAdmin) {
+    return <div className="text-center py-12 text-muted-foreground">Acesso restrito a administradores.</div>;
+  }
+
   return (
     <div className="space-y-6 max-w-5xl">
       <div className="flex items-center justify-between">
