@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -26,9 +26,7 @@ const ROLE_LABEL: Record<Role, string> = {
 
 function UsersPage() {
   const { roles } = useAuth();
-  if (!roles.includes("admin")) {
-    return <div className="text-center py-12 text-muted-foreground">Acesso restrito a administradores.</div>;
-  }
+  const isAdmin = roles.includes("admin");
 
   const qc = useQueryClient();
   const fnList = useServerFn(listUsers);
