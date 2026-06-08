@@ -37,6 +37,7 @@ function UsersPage() {
   const { data: users, isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: () => fnList(),
+    enabled: isAdmin,
   });
 
   const [open, setOpen] = useState(false);
