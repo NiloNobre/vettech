@@ -39,9 +39,13 @@ function ProfilesPage() {
   const [form, setForm] = useState<FormState>(EMPTY);
 
   const save = useMutation({
-    mutationFn: () => form.id
-      ? fnUpdate({ data: { id: form.id, name: form.name, description: form.description, modules: form.modules } })
-      : fnCreate({ data: { name: form.name, description: form.description, modules: form.modules } }),
+    mutationFn: async () => {
+      if (form.id) {
+        await fnUpdate({ data: { id: form.id, name: form.name, description: form.description, modules: form.modules } });
+      } else {
+        await fnCreate({ data: { name: form.name, description: form.description, modules: form.modules } });
+      }
+    },
     onSuccess: () => {
       toast.success("Perfil salvo");
       setOpen(false); setForm(EMPTY);
