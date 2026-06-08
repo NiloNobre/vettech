@@ -13,12 +13,16 @@ import { Route as PainelRouteImport } from './routes/painel'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
+import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedQueueRouteImport } from './routes/_authenticated/queue'
 import { Route as AuthenticatedProductsRouteImport } from './routes/_authenticated/products'
 import { Route as AuthenticatedPatientsRouteImport } from './routes/_authenticated/patients'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticated/clients'
 import { Route as AuthenticatedProntuariosIndexRouteImport } from './routes/_authenticated/prontuarios.index'
+import { Route as AuthenticatedStockReportsRouteImport } from './routes/_authenticated/stock.reports'
+import { Route as AuthenticatedStockMovementsRouteImport } from './routes/_authenticated/stock.movements'
 import { Route as AuthenticatedProntuariosPatientIdRouteImport } from './routes/_authenticated/prontuarios.$patientId'
 
 const PainelRoute = PainelRouteImport.update({
@@ -39,6 +43,16 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedUsersRoute = AuthenticatedUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedQueueRoute = AuthenticatedQueueRouteImport.update({
   id: '/queue',
@@ -71,6 +85,18 @@ const AuthenticatedProntuariosIndexRoute =
     path: '/prontuarios/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedStockReportsRoute =
+  AuthenticatedStockReportsRouteImport.update({
+    id: '/stock/reports',
+    path: '/stock/reports',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedStockMovementsRoute =
+  AuthenticatedStockMovementsRouteImport.update({
+    id: '/stock/movements',
+    path: '/stock/movements',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedProntuariosPatientIdRoute =
   AuthenticatedProntuariosPatientIdRouteImport.update({
     id: '/prontuarios/$patientId',
@@ -87,7 +113,11 @@ export interface FileRoutesByFullPath {
   '/patients': typeof AuthenticatedPatientsRoute
   '/products': typeof AuthenticatedProductsRoute
   '/queue': typeof AuthenticatedQueueRoute
+  '/reports': typeof AuthenticatedReportsRoute
+  '/users': typeof AuthenticatedUsersRoute
   '/prontuarios/$patientId': typeof AuthenticatedProntuariosPatientIdRoute
+  '/stock/movements': typeof AuthenticatedStockMovementsRoute
+  '/stock/reports': typeof AuthenticatedStockReportsRoute
   '/prontuarios/': typeof AuthenticatedProntuariosIndexRoute
 }
 export interface FileRoutesByTo {
@@ -99,7 +129,11 @@ export interface FileRoutesByTo {
   '/patients': typeof AuthenticatedPatientsRoute
   '/products': typeof AuthenticatedProductsRoute
   '/queue': typeof AuthenticatedQueueRoute
+  '/reports': typeof AuthenticatedReportsRoute
+  '/users': typeof AuthenticatedUsersRoute
   '/prontuarios/$patientId': typeof AuthenticatedProntuariosPatientIdRoute
+  '/stock/movements': typeof AuthenticatedStockMovementsRoute
+  '/stock/reports': typeof AuthenticatedStockReportsRoute
   '/prontuarios': typeof AuthenticatedProntuariosIndexRoute
 }
 export interface FileRoutesById {
@@ -113,7 +147,11 @@ export interface FileRoutesById {
   '/_authenticated/patients': typeof AuthenticatedPatientsRoute
   '/_authenticated/products': typeof AuthenticatedProductsRoute
   '/_authenticated/queue': typeof AuthenticatedQueueRoute
+  '/_authenticated/reports': typeof AuthenticatedReportsRoute
+  '/_authenticated/users': typeof AuthenticatedUsersRoute
   '/_authenticated/prontuarios/$patientId': typeof AuthenticatedProntuariosPatientIdRoute
+  '/_authenticated/stock/movements': typeof AuthenticatedStockMovementsRoute
+  '/_authenticated/stock/reports': typeof AuthenticatedStockReportsRoute
   '/_authenticated/prontuarios/': typeof AuthenticatedProntuariosIndexRoute
 }
 export interface FileRouteTypes {
@@ -127,7 +165,11 @@ export interface FileRouteTypes {
     | '/patients'
     | '/products'
     | '/queue'
+    | '/reports'
+    | '/users'
     | '/prontuarios/$patientId'
+    | '/stock/movements'
+    | '/stock/reports'
     | '/prontuarios/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -139,7 +181,11 @@ export interface FileRouteTypes {
     | '/patients'
     | '/products'
     | '/queue'
+    | '/reports'
+    | '/users'
     | '/prontuarios/$patientId'
+    | '/stock/movements'
+    | '/stock/reports'
     | '/prontuarios'
   id:
     | '__root__'
@@ -152,7 +198,11 @@ export interface FileRouteTypes {
     | '/_authenticated/patients'
     | '/_authenticated/products'
     | '/_authenticated/queue'
+    | '/_authenticated/reports'
+    | '/_authenticated/users'
     | '/_authenticated/prontuarios/$patientId'
+    | '/_authenticated/stock/movements'
+    | '/_authenticated/stock/reports'
     | '/_authenticated/prontuarios/'
   fileRoutesById: FileRoutesById
 }
@@ -192,6 +242,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/users': {
+      id: '/_authenticated/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AuthenticatedUsersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/reports': {
+      id: '/_authenticated/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof AuthenticatedReportsRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/queue': {
       id: '/_authenticated/queue'
@@ -235,6 +299,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProntuariosIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/stock/reports': {
+      id: '/_authenticated/stock/reports'
+      path: '/stock/reports'
+      fullPath: '/stock/reports'
+      preLoaderRoute: typeof AuthenticatedStockReportsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/stock/movements': {
+      id: '/_authenticated/stock/movements'
+      path: '/stock/movements'
+      fullPath: '/stock/movements'
+      preLoaderRoute: typeof AuthenticatedStockMovementsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/prontuarios/$patientId': {
       id: '/_authenticated/prontuarios/$patientId'
       path: '/prontuarios/$patientId'
@@ -251,7 +329,11 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPatientsRoute: typeof AuthenticatedPatientsRoute
   AuthenticatedProductsRoute: typeof AuthenticatedProductsRoute
   AuthenticatedQueueRoute: typeof AuthenticatedQueueRoute
+  AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
+  AuthenticatedUsersRoute: typeof AuthenticatedUsersRoute
   AuthenticatedProntuariosPatientIdRoute: typeof AuthenticatedProntuariosPatientIdRoute
+  AuthenticatedStockMovementsRoute: typeof AuthenticatedStockMovementsRoute
+  AuthenticatedStockReportsRoute: typeof AuthenticatedStockReportsRoute
   AuthenticatedProntuariosIndexRoute: typeof AuthenticatedProntuariosIndexRoute
 }
 
@@ -261,8 +343,12 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPatientsRoute: AuthenticatedPatientsRoute,
   AuthenticatedProductsRoute: AuthenticatedProductsRoute,
   AuthenticatedQueueRoute: AuthenticatedQueueRoute,
+  AuthenticatedReportsRoute: AuthenticatedReportsRoute,
+  AuthenticatedUsersRoute: AuthenticatedUsersRoute,
   AuthenticatedProntuariosPatientIdRoute:
     AuthenticatedProntuariosPatientIdRoute,
+  AuthenticatedStockMovementsRoute: AuthenticatedStockMovementsRoute,
+  AuthenticatedStockReportsRoute: AuthenticatedStockReportsRoute,
   AuthenticatedProntuariosIndexRoute: AuthenticatedProntuariosIndexRoute,
 }
 
