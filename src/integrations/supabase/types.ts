@@ -323,6 +323,53 @@ export type Database = {
           },
         ]
       }
+      stock_movements: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          invoice_number: string | null
+          kind: string
+          notes: string | null
+          product_id: string
+          quantity: number
+          supplier: string | null
+          unit_cost: number | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          invoice_number?: string | null
+          kind: string
+          notes?: string | null
+          product_id: string
+          quantity: number
+          supplier?: string | null
+          unit_cost?: number | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          invoice_number?: string | null
+          kind?: string
+          notes?: string | null
+          product_id?: string
+          quantity?: number
+          supplier?: string | null
+          unit_cost?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
