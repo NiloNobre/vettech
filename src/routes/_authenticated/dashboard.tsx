@@ -78,7 +78,7 @@ function Dashboard() {
   return (
     <div className="space-y-8 max-w-6xl">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Bem-vindo ao SCV</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Bem-vindo ao VetTECH</h1>
         <p className="text-muted-foreground">Escolha um módulo para começar.</p>
       </div>
 
