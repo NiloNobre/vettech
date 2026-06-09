@@ -44,7 +44,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <PawPrint className="w-5 h-5 text-sidebar-primary-foreground" />
           </div>
           <div>
-            <div className="font-semibold">SCV</div>
+            <div className="font-semibold">VetTECH</div>
             <div className="text-xs opacity-70">Sistema para Clínicas Veterinárias</div>
           </div>
         </div>
@@ -87,7 +87,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="flex-1 overflow-auto">
         <div className="md:hidden flex items-center justify-between p-4 bg-sidebar text-sidebar-foreground">
           <div className="flex items-center gap-2">
-            <PawPrint className="w-5 h-5" /><span className="font-semibold">SCV</span>
+            <PawPrint className="w-5 h-5" /><span className="font-semibold">VetTECH</span>
           </div>
           <Button variant="secondary" size="sm" onClick={() => signOut()}>Sair</Button>
         </div>
