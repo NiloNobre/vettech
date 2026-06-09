@@ -44,6 +44,47 @@ export type Database = {
         }
         Relationships: []
       }
+      atestados: {
+        Row: {
+          content: string
+          created_at: string
+          date: string
+          days: number | null
+          id: string
+          patient_id: string
+          updated_at: string
+          vet_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          date?: string
+          days?: number | null
+          id?: string
+          patient_id: string
+          updated_at?: string
+          vet_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          date?: string
+          days?: number | null
+          id?: string
+          patient_id?: string
+          updated_at?: string
+          vet_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atestados_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           address: string | null
@@ -353,6 +394,47 @@ export type Database = {
           },
         ]
       }
+      receituarios: {
+        Row: {
+          content: string
+          created_at: string
+          date: string
+          id: string
+          kind: string
+          patient_id: string
+          updated_at: string
+          vet_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          date?: string
+          id?: string
+          kind?: string
+          patient_id: string
+          updated_at?: string
+          vet_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          date?: string
+          id?: string
+          kind?: string
+          patient_id?: string
+          updated_at?: string
+          vet_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receituarios_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stock_movements: {
         Row: {
           created_at: string
@@ -443,6 +525,56 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      vacinas: {
+        Row: {
+          application_date: string
+          batch: string | null
+          created_at: string
+          id: string
+          manufacturer: string | null
+          name: string
+          next_dose_date: string | null
+          notes: string | null
+          patient_id: string
+          updated_at: string
+          vet_id: string | null
+        }
+        Insert: {
+          application_date?: string
+          batch?: string | null
+          created_at?: string
+          id?: string
+          manufacturer?: string | null
+          name: string
+          next_dose_date?: string | null
+          notes?: string | null
+          patient_id: string
+          updated_at?: string
+          vet_id?: string | null
+        }
+        Update: {
+          application_date?: string
+          batch?: string | null
+          created_at?: string
+          id?: string
+          manufacturer?: string | null
+          name?: string
+          next_dose_date?: string | null
+          notes?: string | null
+          patient_id?: string
+          updated_at?: string
+          vet_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vacinas_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
