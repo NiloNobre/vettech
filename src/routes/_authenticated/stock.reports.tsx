@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { BarChart3, AlertTriangle, TrendingUp, TrendingDown, Printer } from "lucide-react";
+import { printReport } from "@/lib/print-docs";
 
 export const Route = createFileRoute("/_authenticated/stock/reports")({ component: StockReports });
 
