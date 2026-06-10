@@ -41,11 +41,28 @@ function Reports() {
     },
   });
 
+  function exportPdf() {
+    if (!data) return;
+    const days = Object.entries(data.byDay).sort().map(([d, n]) => `<tr><td>${d}</td><td style="text-align:right">${n}</td></tr>`).join("");
+    const html = `
+      <div class="grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="field"><span class="label">Clientes</span><span class="value">${data.clients}</span></div>
+        <div class="field"><span class="label">Pacientes</span><span class="value">${data.patients}</span></div>
+        <div class="field"><span class="label">Atendimentos (30d)</span><span class="value">${data.consultations30}</span></div>
+        <div class="field"><span class="label">Na fila</span><span class="value">${(data.queueByStatus.waiting ?? 0) + (data.queueByStatus.called ?? 0)}</span></div>
+      </div>
+      <div class="body-box items" style="min-height:auto"><table class="items"><thead><tr><th>Data</th><th style="text-align:right">Atendimentos</th></tr></thead><tbody>${days || `<tr><td colspan="2" style="padding:18px;text-align:center;color:#6B7280">Sem dados</td></tr>`}</tbody></table></div>`;
+    printReport("Relatório de gestão", "Visão geral dos últimos 30 dias", html);
+  }
+
   return (
     <div className="space-y-6 max-w-5xl">
-      <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2"><BarChart3 className="w-6 h-6 text-primary" /> Relatórios</h1>
-        <p className="text-muted-foreground text-sm">Visão geral dos últimos 30 dias.</p>
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2"><BarChart3 className="w-6 h-6 text-primary" /> Relatórios</h1>
+          <p className="text-muted-foreground text-sm">Visão geral dos últimos 30 dias.</p>
+        </div>
+        <Button onClick={exportPdf} variant="outline"><Printer className="w-4 h-4 mr-2" />Imprimir / Exportar PDF</Button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
