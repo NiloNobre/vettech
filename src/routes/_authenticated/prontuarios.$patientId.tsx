@@ -30,7 +30,7 @@ function Prontuario() {
   const { data: patient } = useQuery({
     queryKey: ["patient", patientId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("patients").select("*, clients(full_name, phone, cpf, address)").eq("id", patientId).single();
+      const { data, error } = await supabase.from("patients").select("*, clients(full_name, phone, document, address)").eq("id", patientId).single();
       if (error) throw error; return data;
     },
   });
