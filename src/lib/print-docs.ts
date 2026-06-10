@@ -8,7 +8,7 @@ export interface PatientLite {
   breed?: string | null;
   sex?: string | null;
   weight?: number | null;
-  clients?: { full_name?: string | null; phone?: string | null; cpf?: string | null; address?: string | null } | null;
+  clients?: { full_name?: string | null; phone?: string | null; document?: string | null; address?: string | null } | null;
 }
 
 const BRAND = {
