@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { BarChart3, AlertTriangle, TrendingUp, TrendingDown, Printer } from "lucide-react";
+import { printReport } from "@/lib/print-docs";
 
 export const Route = createFileRoute("/_authenticated/stock/reports")({ component: StockReports });
 
@@ -29,11 +31,31 @@ function StockReports() {
     },
   });
 
+  function exportPdf() {
+    if (!data) return;
+    const lows = data.lowStock.length === 0
+      ? `<tr><td colspan="3" style="padding:18px;text-align:center;color:#6B7280">Nenhum produto em estoque baixo</td></tr>`
+      : data.lowStock.map((p) => `<tr><td>${p.name}</td><td style="text-align:right">${p.stock}</td><td style="text-align:right">${p.min_stock ?? 0}</td></tr>`).join("");
+    const html = `
+      <div class="grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="field"><span class="label">Produtos</span><span class="value">${data.productsCount}</span></div>
+        <div class="field"><span class="label">Valor em estoque</span><span class="value">R$ ${data.totalValue.toFixed(2)}</span></div>
+        <div class="field"><span class="label">Entradas (qtd)</span><span class="value">${data.entryQty}</span></div>
+        <div class="field"><span class="label">Saídas (qtd)</span><span class="value">${data.exitQty}</span></div>
+      </div>
+      <div style="margin-top:18px;font-size:11px;color:#6B7280;text-transform:uppercase;letter-spacing:.8px">Estoque baixo</div>
+      <div class="body-box items" style="min-height:auto"><table class="items"><thead><tr><th>Produto</th><th style="text-align:right">Estoque</th><th style="text-align:right">Mínimo</th></tr></thead><tbody>${lows}</tbody></table></div>`;
+    printReport("Relatório de estoque", "Resumo dos últimos 30 dias", html);
+  }
+
   return (
     <div className="space-y-6 max-w-5xl">
-      <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2"><BarChart3 className="w-6 h-6 text-primary" /> Relatórios de estoque</h1>
-        <p className="text-muted-foreground text-sm">Resumo dos últimos 30 dias.</p>
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2"><BarChart3 className="w-6 h-6 text-primary" /> Relatórios de estoque</h1>
+          <p className="text-muted-foreground text-sm">Resumo dos últimos 30 dias.</p>
+        </div>
+        <Button onClick={exportPdf} variant="outline"><Printer className="w-4 h-4 mr-2" />Imprimir / Exportar PDF</Button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

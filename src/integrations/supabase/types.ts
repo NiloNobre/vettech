@@ -180,6 +180,50 @@ export type Database = {
           },
         ]
       }
+      exames: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          name: string
+          notes: string | null
+          patient_id: string
+          requested: string | null
+          result: string | null
+          vet_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          name: string
+          notes?: string | null
+          patient_id: string
+          requested?: string | null
+          result?: string | null
+          vet_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          patient_id?: string
+          requested?: string | null
+          result?: string | null
+          vet_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exames_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patients: {
         Row: {
           birth_date: string | null
@@ -232,6 +276,92 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescricao_items: {
+        Row: {
+          created_at: string
+          dosage: string | null
+          duration: string | null
+          frequency: string | null
+          id: string
+          notes: string | null
+          prescricao_id: string
+          product_id: string | null
+          product_name: string
+        }
+        Insert: {
+          created_at?: string
+          dosage?: string | null
+          duration?: string | null
+          frequency?: string | null
+          id?: string
+          notes?: string | null
+          prescricao_id: string
+          product_id?: string | null
+          product_name: string
+        }
+        Update: {
+          created_at?: string
+          dosage?: string | null
+          duration?: string | null
+          frequency?: string | null
+          id?: string
+          notes?: string | null
+          prescricao_id?: string
+          product_id?: string | null
+          product_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescricao_items_prescricao_id_fkey"
+            columns: ["prescricao_id"]
+            isOneToOne: false
+            referencedRelation: "prescricoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prescricao_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescricoes: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          notes: string | null
+          patient_id: string
+          vet_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          patient_id: string
+          vet_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          vet_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescricoes_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
             referencedColumns: ["id"]
           },
         ]
