@@ -131,7 +131,7 @@ export function printReceituarioItems(patient: PatientLite | null | undefined, i
 
 export function printReceituarioEspecial(patient: PatientLite | null | undefined, content: string, vetName = "", crmv = "") {
   const tutorAddr = patient?.clients?.address ?? "";
-  const tutorCpf = patient?.clients?.cpf ?? "";
+  const tutorCpf = patient?.clients?.document ?? "";
   const inner = `${header(shortId(), new Date().toLocaleDateString("pt-BR"))}
     <h2 class="title">Receituário de Controle Especial</h2>
     <p class="subtitle">Conforme Portaria SVS/MS 344/98 — 2 vias</p>
