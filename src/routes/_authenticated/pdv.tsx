@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -45,6 +45,7 @@ import {
   User,
   Sparkles,
   Percent,
+  Settings,
 } from "lucide-react";
 import { printCupomFiscal, type CupomFiscalData } from "@/lib/print-docs";
 
@@ -77,6 +78,37 @@ function PDVPage() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const [activeTab, setActiveTab] = useState("pdv");
+
+  // Clinic receipt header settings
+  const [clinicSettings, setClinicSettings] = useState({
+    name: "VETTECH CLINICA VETERINARIA LTDA",
+    cnpj: "12.345.678/0001-90",
+    ie: "123.456.789.110",
+    address: "RUA DAS FLORES, 123 - CENTRO",
+  });
+  const [tempSettings, setTempSettings] = useState(clinicSettings);
+  const [showSettingsDialog, setShowSettingsDialog] = useState(false);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("vettech_pdv_settings");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setClinicSettings(parsed);
+        setTempSettings(parsed);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, []);
+
+  const handleSaveSettings = () => {
+    localStorage.setItem("vettech_pdv_settings", JSON.stringify(tempSettings));
+    setClinicSettings(tempSettings);
+    setShowSettingsDialog(false);
+    toast.success("Configurações do cupom salvas com sucesso!");
+  };
 
   // Core state for Cart
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -330,6 +362,10 @@ function PDVPage() {
         paymentMethod: paymentMethod,
         amountPaid: paymentMethod === "dinheiro" ? Number(amountPaid.replace(",", ".")) : cartTotal,
         change: paymentMethod === "dinheiro" ? changeValue : 0,
+        clinicName: clinicSettings.name,
+        clinicCnpj: clinicSettings.cnpj,
+        clinicIe: clinicSettings.ie,
+        clinicAddress: clinicSettings.address,
       };
     },
     onSuccess: (data) => {
@@ -366,6 +402,17 @@ function PDVPage() {
             Checkout rápido de produtos com emissão de Cupom Fiscal.
           </p>
         </div>
+        <Button
+          variant="outline"
+          onClick={() => {
+            setTempSettings(clinicSettings);
+            setShowSettingsDialog(true);
+          }}
+          className="flex items-center gap-2"
+        >
+          <Settings className="w-4 h-4" />
+          Configurar Recibo
+        </Button>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
@@ -919,6 +966,112 @@ function PDVPage() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* SETTINGS DIALOG — Configurações do Cupom Fiscal */}
+      <Dialog open={showSettingsDialog} onOpenChange={setShowSettingsDialog}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Settings className="w-5 h-5 text-primary" /> Configurações do Cupom Fiscal
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-muted-foreground">
+              Edite as informações da sua clínica que serão impressas no cabeçalho do cupom fiscal.
+              As configurações são salvas localmente no navegador.
+            </p>
+
+            <div className="space-y-3">
+              {/* Nome da Clínica */}
+              <div className="space-y-1">
+                <Label htmlFor="settings-clinic-name" className="text-xs font-semibold">
+                  Nome / Razão Social da Clínica
+                </Label>
+                <Input
+                  id="settings-clinic-name"
+                  value={tempSettings.name}
+                  onChange={(e) =>
+                    setTempSettings((prev) => ({ ...prev, name: e.target.value.toUpperCase() }))
+                  }
+                  placeholder="Ex: VETTECH CLÍNICA VETERINÁRIA LTDA"
+                  className="uppercase"
+                />
+              </div>
+
+              {/* CNPJ */}
+              <div className="space-y-1">
+                <Label htmlFor="settings-cnpj" className="text-xs font-semibold">
+                  CNPJ
+                </Label>
+                <Input
+                  id="settings-cnpj"
+                  value={tempSettings.cnpj}
+                  onChange={(e) => setTempSettings((prev) => ({ ...prev, cnpj: e.target.value }))}
+                  placeholder="Ex: 12.345.678/0001-90"
+                  maxLength={18}
+                />
+                <p className="text-[10px] text-muted-foreground">
+                  Formato: 00.000.000/0000-00
+                </p>
+              </div>
+
+              {/* Inscrição Estadual */}
+              <div className="space-y-1">
+                <Label htmlFor="settings-ie" className="text-xs font-semibold">
+                  Inscrição Estadual (IE)
+                </Label>
+                <Input
+                  id="settings-ie"
+                  value={tempSettings.ie}
+                  onChange={(e) => setTempSettings((prev) => ({ ...prev, ie: e.target.value }))}
+                  placeholder="Ex: 123.456.789.110 ou ISENTO"
+                />
+              </div>
+
+              {/* Endereço */}
+              <div className="space-y-1">
+                <Label htmlFor="settings-address" className="text-xs font-semibold">
+                  Endereço Completo
+                </Label>
+                <Input
+                  id="settings-address"
+                  value={tempSettings.address}
+                  onChange={(e) =>
+                    setTempSettings((prev) => ({ ...prev, address: e.target.value.toUpperCase() }))
+                  }
+                  placeholder="Ex: RUA DAS FLORES, 123 - CENTRO - SÃO PAULO/SP"
+                  className="uppercase"
+                />
+              </div>
+            </div>
+
+            {/* Preview */}
+            <div className="border rounded-lg p-3 bg-muted/50 space-y-0.5 text-center font-mono text-xs">
+              <p className="font-bold text-sm">{tempSettings.name || "NOME DA CLÍNICA"}</p>
+              <p className="text-muted-foreground">CNPJ: {tempSettings.cnpj || "00.000.000/0000-00"}</p>
+              <p className="text-muted-foreground">IE: {tempSettings.ie || "—"}</p>
+              <p className="text-muted-foreground">{tempSettings.address || "ENDEREÇO DA CLÍNICA"}</p>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2 flex-row">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => {
+                setTempSettings(clinicSettings);
+                setShowSettingsDialog(false);
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button className="flex-1" onClick={handleSaveSettings}>
+              Salvar Configurações
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

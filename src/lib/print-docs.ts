@@ -282,6 +282,10 @@ export interface CupomFiscalData {
   paymentMethod: string;
   amountPaid: number;
   change: number;
+  clinicName?: string;
+  clinicCnpj?: string;
+  clinicIe?: string;
+  clinicAddress?: string;
 }
 
 const cupomStyles = `
@@ -350,12 +354,17 @@ export function printCupomFiscal(data: CupomFiscalData) {
   const ticketId = data.id.startsWith("PDV-") ? data.id : `PDV-${data.id}`;
   const tributos = data.total * 0.1345; // 13.45% average IBPT taxes
 
+  const clinicName = data.clinicName || "VETTECH CLINICA VETERINARIA LTDA";
+  const clinicCnpj = data.clinicCnpj || "12.345.678/0001-90";
+  const clinicIe = data.clinicIe || "123.456.789.110";
+  const clinicAddress = data.clinicAddress || "RUA DAS FLORES, 123 - CENTRO";
+
   const inner = `
     <div class="receipt">
       <div class="center bold header">
         <div class="logo">VetTECH</div>
-        <div>VETTECH CLINICA VETERINARIA LTDA</div>
-        <div style="font-size: 9px; font-weight: normal;">CNPJ: 12.345.678/0001-90<br/>IE: 123.456.789.110<br/>RUA DAS FLORES, 123 - CENTRO</div>
+        <div>${escapeHtml(clinicName)}</div>
+        <div style="font-size: 9px; font-weight: normal;">CNPJ: ${escapeHtml(clinicCnpj)}<br/>IE: ${escapeHtml(clinicIe)}<br/>${escapeHtml(clinicAddress)}</div>
       </div>
       
       <div class="divider"></div>
