@@ -16,8 +16,14 @@ interface AuthCtx {
 }
 
 const Ctx = createContext<AuthCtx>({
-  user: null, session: null, roles: [], modules: [], profileName: null,
-  loading: true, signOut: async () => {}, refreshAccess: async () => {},
+  user: null,
+  session: null,
+  roles: [],
+  modules: [],
+  profileName: null,
+  loading: true,
+  signOut: async () => {},
+  refreshAccess: async () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -48,7 +54,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (s?.user) {
         setTimeout(() => loadAccess(s.user.id), 0);
       } else {
-        setRoles([]); setModules([]); setProfileName(null);
+        setRoles([]);
+        setModules([]);
+        setProfileName(null);
       }
     });
     supabase.auth.getSession().then(({ data }) => {
@@ -60,12 +68,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <Ctx.Provider value={{
-      user: session?.user ?? null,
-      session, roles, modules, profileName, loading,
-      signOut: async () => { await supabase.auth.signOut(); },
-      refreshAccess: async () => { if (session?.user) await loadAccess(session.user.id); },
-    }}>{children}</Ctx.Provider>
+    <Ctx.Provider
+      value={{
+        user: session?.user ?? null,
+        session,
+        roles,
+        modules,
+        profileName,
+        loading,
+        signOut: async () => {
+          await supabase.auth.signOut();
+        },
+        refreshAccess: async () => {
+          if (session?.user) await loadAccess(session.user.id);
+        },
+      }}
+    >
+      {children}
+    </Ctx.Provider>
   );
 }
 

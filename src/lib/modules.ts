@@ -9,7 +9,8 @@ export type ModuleKey =
   | "reports"
   | "products"
   | "stock_movements"
-  | "stock_reports";
+  | "stock_reports"
+  | "sales";
 
 export type ModuleDef = {
   key: ModuleKey;
@@ -24,6 +25,7 @@ export const MODULES: ModuleDef[] = [
   { key: "patients", label: "Pacientes", group: "Recepção", to: "/patients" },
   { key: "queue", label: "Fila de Chamada", group: "Atendimento", to: "/queue" },
   { key: "prontuarios", label: "Prontuários", group: "Atendimento", to: "/prontuarios" },
+  { key: "sales", label: "Vendas (PDV)", group: "Vendas", to: "/pdv" },
   { key: "users", label: "Usuários", group: "Gestão", to: "/users" },
   { key: "profiles", label: "Perfis de Acesso", group: "Gestão", to: "/profiles" },
   { key: "reports", label: "Relatórios", group: "Gestão", to: "/reports" },

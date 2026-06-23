@@ -7,8 +7,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { ArrowDownUp, Plus, TrendingUp, TrendingDown, Settings2 } from "lucide-react";
@@ -22,13 +34,19 @@ function Movements() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
-    product_id: "", kind: "in" as Kind, quantity: 1, unit_cost: "",
-    invoice_number: "", supplier: "", notes: "",
+    product_id: "",
+    kind: "in" as Kind,
+    quantity: 1,
+    unit_cost: "",
+    invoice_number: "",
+    supplier: "",
+    notes: "",
   });
 
   const products = useQuery({
     queryKey: ["products-min"],
-    queryFn: async () => (await supabase.from("products").select("id, name, stock").order("name")).data ?? [],
+    queryFn: async () =>
+      (await supabase.from("products").select("id, name, stock").order("name")).data ?? [],
   });
 
   const movs = useQuery({
@@ -36,8 +54,11 @@ function Movements() {
     queryFn: async () => {
       const { data } = await supabase
         .from("stock_movements")
-        .select("id, kind, quantity, unit_cost, invoice_number, supplier, notes, created_at, product_id, products(name)")
-        .order("created_at", { ascending: false }).limit(100);
+        .select(
+          "id, kind, quantity, unit_cost, invoice_number, supplier, notes, created_at, product_id, products(name)",
+        )
+        .order("created_at", { ascending: false })
+        .limit(100);
       return data ?? [];
     },
   });
@@ -60,7 +81,15 @@ function Movements() {
     onSuccess: () => {
       toast.success("Movimentação registrada");
       setOpen(false);
-      setForm({ product_id: "", kind: "in", quantity: 1, unit_cost: "", invoice_number: "", supplier: "", notes: "" });
+      setForm({
+        product_id: "",
+        kind: "in",
+        quantity: 1,
+        unit_cost: "",
+        invoice_number: "",
+        supplier: "",
+        notes: "",
+      });
       qc.invalidateQueries({ queryKey: ["movements"] });
       qc.invalidateQueries({ queryKey: ["products-min"] });
       qc.invalidateQueries({ queryKey: ["products"] });
@@ -78,18 +107,33 @@ function Movements() {
     <div className="space-y-6 max-w-5xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2"><ArrowDownUp className="w-6 h-6 text-primary" /> Entradas / Saídas</h1>
-          <p className="text-muted-foreground text-sm">Movimentações de estoque com lançamento de NF.</p>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <ArrowDownUp className="w-6 h-6 text-primary" /> Entradas / Saídas
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            Movimentações de estoque com lançamento de NF.
+          </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild><Button><Plus className="w-4 h-4 mr-2" /> Nova movimentação</Button></DialogTrigger>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="w-4 h-4 mr-2" /> Nova movimentação
+            </Button>
+          </DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>Registrar movimentação</DialogTitle></DialogHeader>
+            <DialogHeader>
+              <DialogTitle>Registrar movimentação</DialogTitle>
+            </DialogHeader>
             <div className="space-y-3">
               <div>
                 <Label>Tipo</Label>
-                <Select value={form.kind} onValueChange={(v) => setForm({ ...form, kind: v as Kind })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select
+                  value={form.kind}
+                  onValueChange={(v) => setForm({ ...form, kind: v as Kind })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="in">Entrada (NF)</SelectItem>
                     <SelectItem value="out">Saída</SelectItem>
@@ -99,27 +143,71 @@ function Movements() {
               </div>
               <div>
                 <Label>Produto</Label>
-                <Select value={form.product_id} onValueChange={(v) => setForm({ ...form, product_id: v })}>
-                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <Select
+                  value={form.product_id}
+                  onValueChange={(v) => setForm({ ...form, product_id: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
                   <SelectContent>
                     {(products.data ?? []).map((p) => (
-                      <SelectItem key={p.id} value={p.id}>{p.name} (estoque: {p.stock})</SelectItem>
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name} (estoque: {p.stock})
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>{form.kind === "adjust" ? "Novo estoque" : "Quantidade"}</Label><Input type="number" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: Number(e.target.value) })} /></div>
-                <div><Label>Custo unitário</Label><Input type="number" step="0.01" value={form.unit_cost} onChange={(e) => setForm({ ...form, unit_cost: e.target.value })} /></div>
+                <div>
+                  <Label>{form.kind === "adjust" ? "Novo estoque" : "Quantidade"}</Label>
+                  <Input
+                    type="number"
+                    value={form.quantity}
+                    onChange={(e) => setForm({ ...form, quantity: Number(e.target.value) })}
+                  />
+                </div>
+                <div>
+                  <Label>Custo unitário</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={form.unit_cost}
+                    onChange={(e) => setForm({ ...form, unit_cost: e.target.value })}
+                  />
+                </div>
               </div>
               {form.kind === "in" && (
                 <div className="grid grid-cols-2 gap-3">
-                  <div><Label>Nº da NF</Label><Input value={form.invoice_number} onChange={(e) => setForm({ ...form, invoice_number: e.target.value })} /></div>
-                  <div><Label>Fornecedor</Label><Input value={form.supplier} onChange={(e) => setForm({ ...form, supplier: e.target.value })} /></div>
+                  <div>
+                    <Label>Nº da NF</Label>
+                    <Input
+                      value={form.invoice_number}
+                      onChange={(e) => setForm({ ...form, invoice_number: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label>Fornecedor</Label>
+                    <Input
+                      value={form.supplier}
+                      onChange={(e) => setForm({ ...form, supplier: e.target.value })}
+                    />
+                  </div>
                 </div>
               )}
-              <div><Label>Observações</Label><Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
-              <Button className="w-full" disabled={create.isPending} onClick={() => create.mutate()}>
+              <div>
+                <Label>Observações</Label>
+                <Textarea
+                  value={form.notes}
+                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                />
+              </div>
+              <Button
+                className="w-full"
+                disabled={create.isPending}
+                onClick={() => create.mutate()}
+              >
                 {create.isPending ? "Salvando..." : "Registrar"}
               </Button>
             </div>
@@ -128,7 +216,9 @@ function Movements() {
       </div>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Últimas movimentações</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle className="text-base">Últimas movimentações</CardTitle>
+        </CardHeader>
         <CardContent>
           <div className="divide-y">
             {(movs.data ?? []).map((m: any) => {
@@ -145,12 +235,17 @@ function Movements() {
                     </div>
                   </div>
                   <div className={`font-semibold ${meta.color}`}>
-                    {m.kind === "in" ? "+" : m.kind === "out" ? "-" : "="}{m.quantity}
+                    {m.kind === "in" ? "+" : m.kind === "out" ? "-" : "="}
+                    {m.quantity}
                   </div>
                 </div>
               );
             })}
-            {movs.data && movs.data.length === 0 && <div className="text-sm text-muted-foreground py-6 text-center">Sem movimentações.</div>}
+            {movs.data && movs.data.length === 0 && (
+              <div className="text-sm text-muted-foreground py-6 text-center">
+                Sem movimentações.
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

@@ -15,7 +15,9 @@ export const Route = createFileRoute("/auth")({ component: AuthPage });
 function AuthPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  useEffect(() => { if (!loading && user) navigate({ to: "/dashboard", replace: true }); }, [user, loading, navigate]);
+  useEffect(() => {
+    if (!loading && user) navigate({ to: "/dashboard", replace: true });
+  }, [user, loading, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/40 to-accent/30 p-4">
@@ -33,8 +35,12 @@ function AuthPage() {
               <TabsTrigger value="login">Entrar</TabsTrigger>
               <TabsTrigger value="signup">Cadastrar</TabsTrigger>
             </TabsList>
-            <TabsContent value="login"><LoginForm /></TabsContent>
-            <TabsContent value="signup"><SignupForm /></TabsContent>
+            <TabsContent value="login">
+              <LoginForm />
+            </TabsContent>
+            <TabsContent value="signup">
+              <SignupForm />
+            </TabsContent>
           </Tabs>
         </CardContent>
       </Card>
@@ -55,9 +61,17 @@ function LoginForm() {
   }
   return (
     <form onSubmit={submit} className="space-y-3 pt-4">
-      <div><Label>Email</Label><Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} /></div>
-      <div><Label>Senha</Label><Input type="password" required value={pw} onChange={(e) => setPw(e.target.value)} /></div>
-      <Button type="submit" className="w-full" disabled={busy}>{busy ? "Entrando…" : "Entrar"}</Button>
+      <div>
+        <Label>Email</Label>
+        <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+      </div>
+      <div>
+        <Label>Senha</Label>
+        <Input type="password" required value={pw} onChange={(e) => setPw(e.target.value)} />
+      </div>
+      <Button type="submit" className="w-full" disabled={busy}>
+        {busy ? "Entrando…" : "Entrar"}
+      </Button>
     </form>
   );
 }
@@ -71,7 +85,8 @@ function SignupForm() {
     e.preventDefault();
     setBusy(true);
     const { error } = await supabase.auth.signUp({
-      email, password: pw,
+      email,
+      password: pw,
       options: { emailRedirectTo: window.location.origin, data: { full_name: name } },
     });
     setBusy(false);
@@ -80,11 +95,30 @@ function SignupForm() {
   }
   return (
     <form onSubmit={submit} className="space-y-3 pt-4">
-      <div><Label>Nome completo</Label><Input required value={name} onChange={(e) => setName(e.target.value)} /></div>
-      <div><Label>Email</Label><Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} /></div>
-      <div><Label>Senha</Label><Input type="password" required minLength={6} value={pw} onChange={(e) => setPw(e.target.value)} /></div>
-      <Button type="submit" className="w-full" disabled={busy}>{busy ? "Criando…" : "Criar conta"}</Button>
-      <p className="text-xs text-muted-foreground">O primeiro usuário cadastrado vira admin/veterinário. Os demais entram como recepção.</p>
+      <div>
+        <Label>Nome completo</Label>
+        <Input required value={name} onChange={(e) => setName(e.target.value)} />
+      </div>
+      <div>
+        <Label>Email</Label>
+        <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+      </div>
+      <div>
+        <Label>Senha</Label>
+        <Input
+          type="password"
+          required
+          minLength={6}
+          value={pw}
+          onChange={(e) => setPw(e.target.value)}
+        />
+      </div>
+      <Button type="submit" className="w-full" disabled={busy}>
+        {busy ? "Criando…" : "Criar conta"}
+      </Button>
+      <p className="text-xs text-muted-foreground">
+        O primeiro usuário cadastrado vira admin/veterinário. Os demais entram como recepção.
+      </p>
     </form>
   );
 }

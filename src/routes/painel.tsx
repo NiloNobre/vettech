@@ -22,7 +22,9 @@ interface Row {
 // Short notification beep using WebAudio
 function playBeep() {
   try {
-    const Ctx = (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext);
+    const Ctx =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     const ctx = new Ctx();
     const playTone = (freq: number, start: number, dur: number) => {
       const osc = ctx.createOscillator();
@@ -70,16 +72,21 @@ function PainelTV() {
 
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
-    const ch = supabase.channel("queue-tv")
-      .on("postgres_changes", { event: "*", schema: "public", table: "queue" },
-        () => qc.invalidateQueries({ queryKey: ["queue-tv"] }))
+    const ch = supabase
+      .channel("queue-tv")
+      .on("postgres_changes", { event: "*", schema: "public", table: "queue" }, () =>
+        qc.invalidateQueries({ queryKey: ["queue-tv"] }),
+      )
       .subscribe();
     // Pre-load voices (some browsers populate async)
     if (typeof window !== "undefined" && window.speechSynthesis) {
       window.speechSynthesis.getVoices();
       window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
     }
-    return () => { clearInterval(t); supabase.removeChannel(ch); };
+    return () => {
+      clearInterval(t);
+      supabase.removeChannel(ch);
+    };
   }, [qc]);
 
   const { data = [] } = useQuery({
@@ -142,8 +149,10 @@ function PainelTV() {
         </div>
         <div className="flex items-center gap-4">
           {!soundOn ? (
-            <button onClick={enableSound}
-              className="flex items-center gap-2 bg-sidebar-primary text-sidebar-primary-foreground px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90">
+            <button
+              onClick={enableSound}
+              className="flex items-center gap-2 bg-sidebar-primary text-sidebar-primary-foreground px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90"
+            >
               <VolumeX className="w-4 h-4" /> Ativar som
             </button>
           ) : (
@@ -159,10 +168,16 @@ function PainelTV() {
         <section className="lg:col-span-2 flex flex-col items-center justify-center bg-sidebar-accent rounded-3xl p-10 text-center">
           {current ? (
             <>
-              <div className="text-xl opacity-70 uppercase tracking-widest mb-4 animate-pulse">Chamando agora</div>
-              <div className="text-6xl md:text-8xl font-extrabold mb-2">{current.patient_name ?? "—"}</div>
+              <div className="text-xl opacity-70 uppercase tracking-widest mb-4 animate-pulse">
+                Chamando agora
+              </div>
+              <div className="text-6xl md:text-8xl font-extrabold mb-2">
+                {current.patient_name ?? "—"}
+              </div>
               <div className="text-2xl opacity-80 mb-1">{current.patient_species}</div>
-              <div className="text-xl opacity-70 mb-8">Tutor(a): <span className="font-semibold">{current.tutor_name ?? "—"}</span></div>
+              <div className="text-xl opacity-70 mb-8">
+                Tutor(a): <span className="font-semibold">{current.tutor_name ?? "—"}</span>
+              </div>
 
               <div className="inline-block bg-sidebar-primary text-sidebar-primary-foreground text-4xl font-bold px-8 py-4 rounded-2xl">
                 → {current.room ?? "Consultório"}
@@ -183,13 +198,16 @@ function PainelTV() {
                 <div className="text-xs opacity-60 mt-0.5">Tutor: {r.tutor_name ?? "—"}</div>
               </li>
             ))}
-            {waiting.length === 0 && <li className="opacity-60 text-sm">Nenhum paciente aguardando.</li>}
+            {waiting.length === 0 && (
+              <li className="opacity-60 text-sm">Nenhum paciente aguardando.</li>
+            )}
           </ul>
         </aside>
       </main>
       {!soundOn && (
         <div className="mt-6 text-center text-sm opacity-70">
-          Clique em <strong>Ativar som</strong> para liberar a chamada por voz (exigência do navegador).
+          Clique em <strong>Ativar som</strong> para liberar a chamada por voz (exigência do
+          navegador).
         </div>
       )}
     </div>

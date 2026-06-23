@@ -14,8 +14,13 @@ import { useState } from "react";
 export const Route = createFileRoute("/_authenticated/queue")({ component: QueuePage });
 
 interface QueueRow {
-  id: string; patient_id: string; status: string; reason: string | null;
-  room: string | null; created_at: string; called_at: string | null;
+  id: string;
+  patient_id: string;
+  status: string;
+  reason: string | null;
+  room: string | null;
+  created_at: string;
+  called_at: string | null;
   patients?: { name: string; species: string; clients?: { full_name: string } | null } | null;
 }
 
@@ -24,11 +29,15 @@ function QueuePage() {
   const [room, setRoom] = useState("Consultório 1");
 
   useEffect(() => {
-    const ch = supabase.channel("queue-admin")
-      .on("postgres_changes", { event: "*", schema: "public", table: "queue" },
-        () => qc.invalidateQueries({ queryKey: ["queue"] }))
+    const ch = supabase
+      .channel("queue-admin")
+      .on("postgres_changes", { event: "*", schema: "public", table: "queue" }, () =>
+        qc.invalidateQueries({ queryKey: ["queue"] }),
+      )
       .subscribe();
-    return () => { supabase.removeChannel(ch); };
+    return () => {
+      supabase.removeChannel(ch);
+    };
   }, [qc]);
 
   const { data = [] } = useQuery({
@@ -45,7 +54,11 @@ function QueuePage() {
     },
   });
 
-  type QueuePatch = Partial<{ status: "waiting" | "called" | "in_consult" | "done" | "cancelled"; room: string | null; called_at: string | null }>;
+  type QueuePatch = Partial<{
+    status: "waiting" | "called" | "in_consult" | "done" | "cancelled";
+    room: string | null;
+    called_at: string | null;
+  }>;
   const update = useMutation({
     mutationFn: async ({ id, patch }: { id: string; patch: QueuePatch }) => {
       const { error } = await supabase.from("queue").update(patch).eq("id", id);
@@ -60,10 +73,15 @@ function QueuePage() {
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold">Fila de Chamada</h1>
-          <p className="text-sm text-muted-foreground">Chame pacientes para o consultório em tempo real.</p>
+          <p className="text-sm text-muted-foreground">
+            Chame pacientes para o consultório em tempo real.
+          </p>
         </div>
         <a href="/painel" target="_blank" rel="noreferrer">
-          <Button variant="outline"><Tv className="w-4 h-4 mr-2" />Abrir Painel TV</Button>
+          <Button variant="outline">
+            <Tv className="w-4 h-4 mr-2" />
+            Abrir Painel TV
+          </Button>
         </a>
       </div>
 
@@ -71,7 +89,11 @@ function QueuePage() {
         <CardContent className="p-4 flex items-end gap-3 flex-wrap">
           <div className="flex-1 min-w-[200px]">
             <Label>Consultório / Sala</Label>
-            <Input value={room} onChange={(e) => setRoom(e.target.value)} placeholder="Ex: Consultório 1" />
+            <Input
+              value={room}
+              onChange={(e) => setRoom(e.target.value)}
+              placeholder="Ex: Consultório 1"
+            />
           </div>
           <span className="text-xs text-muted-foreground">Definido ao chamar paciente</span>
         </CardContent>
@@ -84,8 +106,20 @@ function QueuePage() {
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-lg">{q.patients?.name}</span>
-                  <Badge variant={q.status === "called" ? "default" : q.status === "in_consult" ? "secondary" : "outline"}>
-                    {q.status === "waiting" ? "Aguardando" : q.status === "called" ? "Chamado" : "Em atendimento"}
+                  <Badge
+                    variant={
+                      q.status === "called"
+                        ? "default"
+                        : q.status === "in_consult"
+                          ? "secondary"
+                          : "outline"
+                    }
+                  >
+                    {q.status === "waiting"
+                      ? "Aguardando"
+                      : q.status === "called"
+                        ? "Chamado"
+                        : "Em atendimento"}
                   </Badge>
                   {q.room && <span className="text-xs text-muted-foreground">→ {q.room}</span>}
                 </div>
@@ -95,24 +129,44 @@ function QueuePage() {
               </div>
               <div className="flex gap-1">
                 {q.status === "waiting" && (
-                  <Button size="sm" onClick={() => update.mutate({ id: q.id, patch: { status: "called", room, called_at: new Date().toISOString() } })}>
+                  <Button
+                    size="sm"
+                    onClick={() =>
+                      update.mutate({
+                        id: q.id,
+                        patch: { status: "called", room, called_at: new Date().toISOString() },
+                      })
+                    }
+                  >
                     <Megaphone className="w-4 h-4 mr-1" /> Chamar
                   </Button>
                 )}
                 {q.status === "called" && (
-                  <Button size="sm" variant="secondary" onClick={() => {
-                    update.mutate({ id: q.id, patch: { status: "in_consult" } });
-                    window.open(`/prontuarios/${q.patient_id}`, "_blank");
-                  }}>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => {
+                      update.mutate({ id: q.id, patch: { status: "in_consult" } });
+                      window.open(`/prontuarios/${q.patient_id}`, "_blank");
+                    }}
+                  >
                     <Check className="w-4 h-4 mr-1" /> Iniciar consulta
                   </Button>
                 )}
                 {q.status === "in_consult" && (
-                  <Button size="sm" variant="secondary" onClick={() => update.mutate({ id: q.id, patch: { status: "done" } })}>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => update.mutate({ id: q.id, patch: { status: "done" } })}
+                  >
                     Finalizar
                   </Button>
                 )}
-                <Button size="icon" variant="ghost" onClick={() => update.mutate({ id: q.id, patch: { status: "cancelled" } })}>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => update.mutate({ id: q.id, patch: { status: "cancelled" } })}
+                >
                   <X className="w-4 h-4 text-destructive" />
                 </Button>
               </div>

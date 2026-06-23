@@ -1,8 +1,19 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
 import {
-  LayoutDashboard, Users, PawPrint, ClipboardList, Package, Monitor, LogOut, Tv,
-  UserCog, BarChart3, ArrowDownUp, ShieldCheck,
+  LayoutDashboard,
+  Users,
+  PawPrint,
+  ClipboardList,
+  Package,
+  Monitor,
+  LogOut,
+  Tv,
+  UserCog,
+  BarChart3,
+  ArrowDownUp,
+  ShieldCheck,
+  ShoppingCart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
@@ -20,6 +31,7 @@ const ICONS: Record<ModuleKey, typeof LayoutDashboard> = {
   products: Package,
   stock_movements: ArrowDownUp,
   stock_reports: BarChart3,
+  sales: ShoppingCart,
 };
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -33,7 +45,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   MODULES.filter((m) => allowed.has(m.key)).forEach((m) => {
     (grouped[m.group] ||= []).push(m);
   });
-  const groupOrder = ["Geral", "Recepção", "Atendimento", "Gestão", "Estoque"];
+  const groupOrder = ["Geral", "Recepção", "Atendimento", "Vendas", "Gestão", "Estoque"];
   const allItems = MODULES.filter((m) => allowed.has(m.key));
 
   return (
@@ -49,27 +61,41 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
         <nav className="flex-1 p-3 space-y-3 overflow-auto">
-          {groupOrder.filter((g) => grouped[g]?.length).map((g) => (
-            <div key={g} className="space-y-1">
-              {g !== "Geral" && (
-                <div className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider opacity-60">{g}</div>
-              )}
-              {grouped[g].map((item) => {
-                const Icon = ICONS[item.key];
-                const active = pathname.startsWith(item.to);
-                return (
-                  <Link key={item.to} to={item.to}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition ${active ? "bg-sidebar-primary text-sidebar-primary-foreground" : "hover:bg-sidebar-accent"}`}>
-                    <Icon className="w-4 h-4" />{item.label}
-                  </Link>
-                );
-              })}
-            </div>
-          ))}
+          {groupOrder
+            .filter((g) => grouped[g]?.length)
+            .map((g) => (
+              <div key={g} className="space-y-1">
+                {g !== "Geral" && (
+                  <div className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider opacity-60">
+                    {g}
+                  </div>
+                )}
+                {grouped[g].map((item) => {
+                  const Icon = ICONS[item.key];
+                  const active = pathname.startsWith(item.to);
+                  return (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition ${active ? "bg-sidebar-primary text-sidebar-primary-foreground" : "hover:bg-sidebar-accent"}`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            ))}
           <div className="space-y-1">
-            <div className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider opacity-60">Painel</div>
-            <a href="/painel" target="_blank" rel="noreferrer"
-               className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-sidebar-accent">
+            <div className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider opacity-60">
+              Painel
+            </div>
+            <a
+              href="/painel"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-sidebar-accent"
+            >
               <Tv className="w-4 h-4" /> Painel TV
             </a>
           </div>
@@ -77,7 +103,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="p-3 border-t border-sidebar-border">
           <div className="text-xs opacity-70 mb-1 truncate">{user?.email}</div>
           <div className="text-[10px] opacity-60 mb-2 uppercase">
-            {profileName ?? "sem perfil"}{isAdmin ? " · admin" : ""}
+            {profileName ?? "sem perfil"}
+            {isAdmin ? " · admin" : ""}
           </div>
           <Button variant="secondary" size="sm" className="w-full" onClick={() => signOut()}>
             <LogOut className="w-4 h-4 mr-2" /> Sair
@@ -87,13 +114,20 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="flex-1 overflow-auto">
         <div className="md:hidden flex items-center justify-between p-4 bg-sidebar text-sidebar-foreground">
           <div className="flex items-center gap-2">
-            <PawPrint className="w-5 h-5" /><span className="font-semibold">VetTECH</span>
+            <PawPrint className="w-5 h-5" />
+            <span className="font-semibold">VetTECH</span>
           </div>
-          <Button variant="secondary" size="sm" onClick={() => signOut()}>Sair</Button>
+          <Button variant="secondary" size="sm" onClick={() => signOut()}>
+            Sair
+          </Button>
         </div>
         <div className="md:hidden border-b overflow-x-auto whitespace-nowrap p-2 bg-card">
           {allItems.map((it) => (
-            <Link key={it.to} to={it.to} className="inline-block px-3 py-1.5 mr-1 rounded-md text-xs bg-secondary text-secondary-foreground">
+            <Link
+              key={it.to}
+              to={it.to}
+              className="inline-block px-3 py-1.5 mr-1 rounded-md text-xs bg-secondary text-secondary-foreground"
+            >
               {it.label}
             </Link>
           ))}

@@ -4,7 +4,11 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 async function assertAdmin(userId: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data } = await supabaseAdmin
-    .from("user_roles").select("role").eq("user_id", userId).eq("role", "admin").maybeSingle();
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId)
+    .eq("role", "admin")
+    .maybeSingle();
   if (!data) throw new Error("Acesso negado: apenas administradores.");
 }
 
@@ -29,8 +33,14 @@ export const createProfile = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: created, error } = await supabaseAdmin
       .from("access_profiles")
-      .insert({ name: data.name, description: data.description ?? null, modules: data.modules, is_system: false })
-      .select().single();
+      .insert({
+        name: data.name,
+        description: data.description ?? null,
+        modules: data.modules,
+        is_system: false,
+      })
+      .select()
+      .single();
     if (error) throw error;
     return created;
   });
@@ -55,10 +65,16 @@ export const deleteProfile = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: prof } = await supabaseAdmin.from("access_profiles").select("is_system").eq("id", data.id).single();
+    const { data: prof } = await supabaseAdmin
+      .from("access_profiles")
+      .select("is_system")
+      .eq("id", data.id)
+      .single();
     if (prof?.is_system) throw new Error("Perfis do sistema não podem ser excluídos.");
     const { count } = await supabaseAdmin
-      .from("user_access_profiles").select("*", { count: "exact", head: true }).eq("profile_id", data.id);
+      .from("user_access_profiles")
+      .select("*", { count: "exact", head: true })
+      .eq("profile_id", data.id);
     if ((count ?? 0) > 0) throw new Error("Existem usuários vinculados a este perfil.");
     const { error } = await supabaseAdmin.from("access_profiles").delete().eq("id", data.id);
     if (error) throw error;

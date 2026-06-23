@@ -8,7 +8,12 @@ export interface PatientLite {
   breed?: string | null;
   sex?: string | null;
   weight?: number | null;
-  clients?: { full_name?: string | null; phone?: string | null; document?: string | null; address?: string | null } | null;
+  clients?: {
+    full_name?: string | null;
+    phone?: string | null;
+    document?: string | null;
+    address?: string | null;
+  } | null;
 }
 
 const BRAND = {
@@ -97,15 +102,29 @@ function footer() {
 function openWindow(title: string, inner: string) {
   const w = window.open("", "_blank", "width=900,height=1000");
   if (!w) return;
-  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title} • VetTECH</title><style>${baseStyles}</style></head><body><div class="toolbar"><button onclick="window.print()">Imprimir / Salvar PDF</button></div><div class="page">${inner}</div></body></html>`);
+  w.document.write(
+    `<!doctype html><html><head><meta charset="utf-8"><title>${title} • VetTECH</title><style>${baseStyles}</style></head><body><div class="toolbar"><button onclick="window.print()">Imprimir / Salvar PDF</button></div><div class="page">${inner}</div></body></html>`,
+  );
   w.document.close();
 }
 
-function shortId() { return Math.random().toString(36).slice(2, 7).toUpperCase(); }
+function shortId() {
+  return Math.random().toString(36).slice(2, 7).toUpperCase();
+}
 
-export interface PrescItem { product_name: string; dosage?: string | null; frequency?: string | null; duration?: string | null }
+export interface PrescItem {
+  product_name: string;
+  dosage?: string | null;
+  frequency?: string | null;
+  duration?: string | null;
+}
 
-export function printReceituarioComum(patient: PatientLite | null | undefined, content: string, vetName = "", crmv = "") {
+export function printReceituarioComum(
+  patient: PatientLite | null | undefined,
+  content: string,
+  vetName = "",
+  crmv = "",
+) {
   const inner = `${header(shortId(), new Date().toLocaleDateString("pt-BR"))}
     <h2 class="title">Receituário</h2>
     <p class="subtitle">Receita de uso comum</p>
@@ -116,8 +135,19 @@ export function printReceituarioComum(patient: PatientLite | null | undefined, c
   openWindow("Receituário", inner);
 }
 
-export function printReceituarioItems(patient: PatientLite | null | undefined, items: PrescItem[], notes = "", vetName = "", crmv = "") {
-  const rows = items.map((i, idx) => `<tr><td class="num">${idx + 1}</td><td><strong>${escapeHtml(i.product_name)}</strong>${i.dosage ? `<div style="font-size:12px;color:#475569">${escapeHtml(i.dosage)}${i.frequency ? " • " + escapeHtml(i.frequency) : ""}${i.duration ? " • " + escapeHtml(i.duration) : ""}</div>` : ""}</td></tr>`).join("");
+export function printReceituarioItems(
+  patient: PatientLite | null | undefined,
+  items: PrescItem[],
+  notes = "",
+  vetName = "",
+  crmv = "",
+) {
+  const rows = items
+    .map(
+      (i, idx) =>
+        `<tr><td class="num">${idx + 1}</td><td><strong>${escapeHtml(i.product_name)}</strong>${i.dosage ? `<div style="font-size:12px;color:#475569">${escapeHtml(i.dosage)}${i.frequency ? " • " + escapeHtml(i.frequency) : ""}${i.duration ? " • " + escapeHtml(i.duration) : ""}</div>` : ""}</td></tr>`,
+    )
+    .join("");
   const inner = `${header(shortId(), new Date().toLocaleDateString("pt-BR"))}
     <h2 class="title">Prescrição Médica</h2>
     <p class="subtitle">Medicamentos prescritos</p>
@@ -129,7 +159,12 @@ export function printReceituarioItems(patient: PatientLite | null | undefined, i
   openWindow("Prescrição", inner);
 }
 
-export function printReceituarioEspecial(patient: PatientLite | null | undefined, content: string, vetName = "", crmv = "") {
+export function printReceituarioEspecial(
+  patient: PatientLite | null | undefined,
+  content: string,
+  vetName = "",
+  crmv = "",
+) {
   const tutorAddr = patient?.clients?.address ?? "";
   const tutorCpf = patient?.clients?.document ?? "";
   const inner = `${header(shortId(), new Date().toLocaleDateString("pt-BR"))}
@@ -181,7 +216,13 @@ export function printReceituarioEspecial(patient: PatientLite | null | undefined
   openWindow("Receituário Especial", inner);
 }
 
-export function printAtestado(patient: PatientLite | null | undefined, content: string, days: number | null, vetName = "", crmv = "") {
+export function printAtestado(
+  patient: PatientLite | null | undefined,
+  content: string,
+  days: number | null,
+  vetName = "",
+  crmv = "",
+) {
   const inner = `${header(shortId(), new Date().toLocaleDateString("pt-BR"))}
     <h2 class="title">Atestado Médico Veterinário</h2>
     <p class="subtitle">Documento clínico</p>
@@ -193,7 +234,14 @@ export function printAtestado(patient: PatientLite | null | undefined, content: 
   openWindow("Atestado", inner);
 }
 
-export function printExame(patient: PatientLite | null | undefined, name: string, requested: string, result: string, vetName = "", crmv = "") {
+export function printExame(
+  patient: PatientLite | null | undefined,
+  name: string,
+  requested: string,
+  result: string,
+  vetName = "",
+  crmv = "",
+) {
   const inner = `${header(shortId(), new Date().toLocaleDateString("pt-BR"))}
     <h2 class="title">Solicitação / Laudo de Exame</h2>
     <p class="subtitle">${escapeHtml(name)}</p>
@@ -214,6 +262,180 @@ export function printReport(title: string, subtitle: string, sectionsHtml: strin
   openWindow(title, inner);
 }
 
+export interface CupomItem {
+  name: string;
+  quantity: number;
+  price: number;
+  total: number;
+  unit?: string | null;
+}
+
+export interface CupomFiscalData {
+  id: string;
+  date: string;
+  clientName?: string | null;
+  clientDocument?: string | null;
+  items: CupomItem[];
+  subtotal: number;
+  discount: number;
+  total: number;
+  paymentMethod: string;
+  amountPaid: number;
+  change: number;
+}
+
+const cupomStyles = `
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11px;
+    color: #000;
+    margin: 0;
+    padding: 10px;
+    background: #fff;
+  }
+  .receipt {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  .center { text-align: center; }
+  .bold { font-weight: bold; }
+  .right { text-align: right; }
+  .header { margin-bottom: 8px; font-size: 11px; }
+  .logo { font-size: 18px; font-weight: bold; margin-bottom: 2px; }
+  .divider { border-top: 1px dashed #000; margin: 6px 0; }
+  .table { width: 100%; border-collapse: collapse; margin: 6px 0; }
+  .table th, .table td { text-align: left; font-size: 10px; padding: 2px 0; font-family: 'Courier New', Courier, monospace; }
+  .table th { border-bottom: 1px dashed #000; }
+  .totals-table { width: 100%; font-size: 11px; margin-top: 6px; }
+  .totals-table td { padding: 1px 0; }
+  .total-row { font-size: 13px; font-weight: bold; }
+  .qr-container { display: flex; flex-direction: column; align-items: center; margin-top: 12px; }
+  .toolbar { position: fixed; top: 10px; right: 10px; }
+  .toolbar button {
+    background: #0F766E;
+    color: #fff;
+    border: 0;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  @page { size: auto; margin: 0mm; }
+  @media print {
+    .toolbar { display: none; }
+    body { padding: 5px; }
+  }
+`;
+
+export function printCupomFiscal(data: CupomFiscalData) {
+  const dateStr = new Date(data.date).toLocaleString("pt-BR");
+  const itemsHtml = data.items
+    .map(
+      (item, idx) => `
+    <tr>
+      <td colspan="4" style="font-weight:bold;">${idx + 1} - ${escapeHtml(item.name)}</td>
+    </tr>
+    <tr>
+      <td>${item.quantity.toFixed(2)} ${item.unit || "un"}</td>
+      <td class="right">x ${item.price.toFixed(2)}</td>
+      <td class="right" colspan="2">${item.total.toFixed(2)}</td>
+    </tr>
+  `,
+    )
+    .join("");
+
+  const ticketId = data.id.startsWith("PDV-") ? data.id : `PDV-${data.id}`;
+  const tributos = data.total * 0.1345; // 13.45% average IBPT taxes
+
+  const inner = `
+    <div class="receipt">
+      <div class="center bold header">
+        <div class="logo">VetTECH</div>
+        <div>VETTECH CLINICA VETERINARIA LTDA</div>
+        <div style="font-size: 9px; font-weight: normal;">CNPJ: 12.345.678/0001-90<br/>IE: 123.456.789.110<br/>RUA DAS FLORES, 123 - CENTRO</div>
+      </div>
+      
+      <div class="divider"></div>
+      <div class="center bold" style="font-size:10px;">CUPOM FISCAL SIMULADO</div>
+      <div class="divider"></div>
+      
+      <table style="width:100%; font-size:10px; margin-bottom: 4px;">
+        <tr><td>DATA: ${dateStr}</td><td class="right">EXTRATO: ${ticketId}</td></tr>
+        <tr><td colspan="2">TUTOR/CLIENTE: ${escapeHtml(data.clientName || "CONSUMIDOR PADRAO")}</td></tr>
+        ${data.clientDocument ? `<tr><td colspan="2">CPF/CNPJ: ${escapeHtml(data.clientDocument)}</td></tr>` : ""}
+      </table>
+      
+      <div class="divider"></div>
+      
+      <table class="table">
+        <thead>
+          <tr>
+            <th>QTD UN</th>
+            <th class="right">VL UN R$</th>
+            <th class="right" colspan="2">VL TR R$</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${itemsHtml}
+        </tbody>
+      </table>
+      
+      <div class="divider"></div>
+      
+      <table class="totals-table">
+        <tr><td>SUBTOTAL R$</td><td class="right">${data.subtotal.toFixed(2)}</td></tr>
+        ${data.discount > 0 ? `<tr><td>DESCONTO R$</td><td class="right">-${data.discount.toFixed(2)}</td></tr>` : ""}
+        <tr class="total-row"><td>TOTAL R$</td><td class="right">${data.total.toFixed(2)}</td></tr>
+        <tr class="divider-row"><td colspan="2"><div class="divider" style="margin:2px 0"></div></td></tr>
+        <tr>
+          <td>${escapeHtml(data.paymentMethod.toUpperCase())} R$</td>
+          <td class="right">${data.amountPaid.toFixed(2)}</td>
+        </tr>
+        ${data.change > 0 ? `<tr><td>TROCO R$</td><td class="right">${data.change.toFixed(2)}</td></tr>` : ""}
+      </table>
+      
+      <div class="divider"></div>
+      
+      <div style="font-size: 9px; text-align: justify; line-height: 1.2;">
+        Tributos Totais Incidentes (Lei Federal 12.741/2012): R$ ${tributos.toFixed(2)} (13,45% Fonte: IBPT)
+      </div>
+      
+      <div class="divider"></div>
+      
+      <div class="qr-container">
+        <svg width="90" height="90" viewBox="0 0 29 29" style="shape-rendering: crispEdges;">
+          <path fill="#000" d="M0 0h7v7H0zm22 0h7v7h-7zM0 22h7v7H0zm3 3h1v1H3zm19-3h7v7h-7zm3 3h1v1h-1zm-6-22h1v1h-1zm2 1h1v1h-1zm-2 2h1v1h-1zm5 0h1v1h-1zm-1-1h1v1h-1zm-3 5h1v1h-1zm2 0h1v1h-1zm-5-3h1v1h-1zm1 1h1v1h-1zm2 3h1v1h-1zm2-7h1v1h-1zm2 1h1v1h-1zm-4 4h1v1h-1zm-2 1h1v1h-1zm-3 1h1v1h-1zm6 0h1v1h-1zm1 1h1v1h-1zm1-2h1v1h-1zm-2 5h1v1h-1zm2 0h1v1h-1zm1-1h1v1h-1zm-4 2h1v1h-1zm-3-1h1v1h-1zm1 3h1v1h-1zm4 0h1v1h-1zm-9-9h1v1h-1zm1-2h1v1H9zm1 3h1v1h-1zm-2 1h1v1h-1zm4 1h1v1h-1zm-1 2h1v1h-1zm2 2h1v1h-1zm-3-1h1v1h-1zm-1 3h1v1h-1zm4-1h1v1h-1zm-2-9h1v1h-1zm-1-2h1v1h-1zm-2 4h1v1h-1zm2 1h1v1h-1zm-1 2h1v1h-1zm-2 1h1v1h-1zm1 1h1v1h-1zm1 1h1v1h-1z"/>
+        </svg>
+        <span style="font-size: 8px; margin-top: 4px; color:#555;">Consulte via Leitor de QR Code</span>
+      </div>
+      
+      <div class="center" style="font-size: 9px; margin-top:12px; color: #555;">
+        Obrigado pela preferência!<br/>
+        VetTECH - Volte Sempre!
+      </div>
+    </div>
+  `;
+
+  const w = window.open("", "_blank", "width=380,height=700");
+  if (!w) return;
+  w.document.write(
+    `<!doctype html><html><head><meta charset="utf-8"><title>Cupom Fiscal • VetTECH</title><style>${cupomStyles}</style></head><body><div class="toolbar"><button onclick="window.print()">Imprimir Cupom</button></div>${inner}</body></html>`,
+  );
+  w.document.close();
+}
+
 function escapeHtml(s: string) {
-  return (s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" } as Record<string, string>)[c]);
+  return (s ?? "").replace(
+    /[&<>"']/g,
+    (c) =>
+      (
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }) as Record<
+          string,
+          string
+        >
+      )[c],
+  );
 }

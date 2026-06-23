@@ -4,8 +4,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Users, PawPrint, ClipboardList, Package, Monitor, AlertTriangle,
-  UserCog, BarChart3, ArrowDownUp, Tv,
+  Users,
+  PawPrint,
+  ClipboardList,
+  Package,
+  Monitor,
+  AlertTriangle,
+  UserCog,
+  BarChart3,
+  ArrowDownUp,
+  Tv,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({ component: Dashboard });
@@ -13,11 +21,17 @@ export const Route = createFileRoute("/_authenticated/dashboard")({ component: D
 type Role = "admin" | "vet" | "reception";
 
 const modules: Array<{
-  key: string; title: string; desc: string; roles?: Role[]; color: string;
+  key: string;
+  title: string;
+  desc: string;
+  roles?: Role[];
+  color: string;
   items: { to: string; label: string; icon: any }[];
 }> = [
   {
-    key: "rec", title: "Recepção", desc: "Cadastro de clientes e pacientes",
+    key: "rec",
+    title: "Recepção",
+    desc: "Cadastro de clientes e pacientes",
     color: "from-primary/15 to-primary/5",
     items: [
       { to: "/clients", label: "Clientes", icon: Users },
@@ -25,24 +39,33 @@ const modules: Array<{
     ],
   },
   {
-    key: "at", title: "Atendimento", desc: "Fila e prontuário eletrônico",
-    roles: ["admin", "vet"], color: "from-emerald-500/15 to-emerald-500/5",
+    key: "at",
+    title: "Atendimento",
+    desc: "Fila e prontuário eletrônico",
+    roles: ["admin", "vet"],
+    color: "from-emerald-500/15 to-emerald-500/5",
     items: [
       { to: "/queue", label: "Fila de Chamada", icon: Monitor },
       { to: "/prontuarios", label: "Prontuários", icon: ClipboardList },
     ],
   },
   {
-    key: "gest", title: "Gestão", desc: "Usuários, perfis e relatórios",
-    roles: ["admin"], color: "from-teal-500/15 to-teal-500/5",
+    key: "gest",
+    title: "Gestão",
+    desc: "Usuários, perfis e relatórios",
+    roles: ["admin"],
+    color: "from-teal-500/15 to-teal-500/5",
     items: [
       { to: "/users", label: "Usuários", icon: UserCog },
       { to: "/reports", label: "Relatórios", icon: BarChart3 },
     ],
   },
   {
-    key: "est", title: "Estoque", desc: "Produtos, NF e relatórios",
-    roles: ["admin", "vet"], color: "from-green-700/15 to-green-700/5",
+    key: "est",
+    title: "Estoque",
+    desc: "Produtos, NF e relatórios",
+    roles: ["admin", "vet"],
+    color: "from-green-700/15 to-green-700/5",
     items: [
       { to: "/products", label: "Produtos", icon: Package },
       { to: "/stock/movements", label: "Entradas / Saídas", icon: ArrowDownUp },
@@ -62,14 +85,23 @@ function Dashboard() {
       const [c, p, q, prod, lowStock, today] = await Promise.all([
         supabase.from("clients").select("*", { count: "exact", head: true }),
         supabase.from("patients").select("*", { count: "exact", head: true }),
-        supabase.from("queue").select("*", { count: "exact", head: true }).in("status", ["waiting", "called"]),
+        supabase
+          .from("queue")
+          .select("*", { count: "exact", head: true })
+          .in("status", ["waiting", "called"]),
         supabase.from("products").select("*", { count: "exact", head: true }),
         supabase.from("products").select("id, name, stock, min_stock").lte("stock", 5).limit(5),
-        supabase.from("consultations").select("*", { count: "exact", head: true }).gte("date", new Date(new Date().setHours(0,0,0,0)).toISOString()),
+        supabase
+          .from("consultations")
+          .select("*", { count: "exact", head: true })
+          .gte("date", new Date(new Date().setHours(0, 0, 0, 0)).toISOString()),
       ]);
       return {
-        clients: c.count ?? 0, patients: p.count ?? 0, queue: q.count ?? 0,
-        products: prod.count ?? 0, consultations: today.count ?? 0,
+        clients: c.count ?? 0,
+        patients: p.count ?? 0,
+        queue: q.count ?? 0,
+        products: prod.count ?? 0,
+        consultations: today.count ?? 0,
         lowStock: lowStock.data ?? [],
       };
     },
@@ -91,8 +123,11 @@ function Dashboard() {
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-2">
               {m.items.map((it) => (
-                <Link key={it.to} to={it.to}
-                  className="flex items-center gap-2 p-3 rounded-lg bg-background/70 hover:bg-background transition border">
+                <Link
+                  key={it.to}
+                  to={it.to}
+                  className="flex items-center gap-2 p-3 rounded-lg bg-background/70 hover:bg-background transition border"
+                >
                   <it.icon className="w-4 h-4 text-primary" />
                   <span className="text-sm font-medium">{it.label}</span>
                 </Link>
@@ -102,12 +137,18 @@ function Dashboard() {
         ))}
         <Card className="bg-gradient-to-br from-muted to-background">
           <CardHeader className="pb-3">
-            <CardTitle className="text-xl flex items-center gap-2"><Tv className="w-5 h-5" /> Painel TV</CardTitle>
+            <CardTitle className="text-xl flex items-center gap-2">
+              <Tv className="w-5 h-5" /> Painel TV
+            </CardTitle>
             <p className="text-sm text-muted-foreground">Tela de chamada para sala de espera</p>
           </CardHeader>
           <CardContent>
-            <a href="/painel" target="_blank" rel="noreferrer"
-              className="inline-flex items-center gap-2 p-3 rounded-lg bg-background/70 hover:bg-background transition border text-sm font-medium">
+            <a
+              href="/painel"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 p-3 rounded-lg bg-background/70 hover:bg-background transition border text-sm font-medium"
+            >
               <Tv className="w-4 h-4 text-primary" /> Abrir painel
             </a>
           </CardContent>
@@ -115,13 +156,25 @@ function Dashboard() {
       </div>
 
       <div>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">Visão geral</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+          Visão geral
+        </h2>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {[
             { label: "Na fila", value: stats.data?.queue ?? 0, icon: Monitor, to: "/queue" },
-            { label: "Atend. hoje", value: stats.data?.consultations ?? 0, icon: ClipboardList, to: "/prontuarios" },
+            {
+              label: "Atend. hoje",
+              value: stats.data?.consultations ?? 0,
+              icon: ClipboardList,
+              to: "/prontuarios",
+            },
             { label: "Clientes", value: stats.data?.clients ?? 0, icon: Users, to: "/clients" },
-            { label: "Pacientes", value: stats.data?.patients ?? 0, icon: PawPrint, to: "/patients" },
+            {
+              label: "Pacientes",
+              value: stats.data?.patients ?? 0,
+              icon: PawPrint,
+              to: "/patients",
+            },
             { label: "Produtos", value: stats.data?.products ?? 0, icon: Package, to: "/products" },
           ].map((c) => (
             <Link key={c.label} to={c.to}>
