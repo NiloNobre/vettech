@@ -428,8 +428,43 @@ export function printCupomFiscal(data: CupomFiscalData) {
     </div>
   `;
 
-  const w = window.open("", "_blank", "width=380,height=700");
-  if (!w) return;
+  // Try opening a popup window
+  const w = window.open("", "_blank", "width=380,height=700,scrollbars=yes");
+
+  if (!w || w.closed || typeof w.closed === "undefined") {
+    // Popup was blocked — fallback: print using a hidden iframe injected into the current page
+    const existingFrame = document.getElementById("vettech-print-frame");
+    if (existingFrame) existingFrame.remove();
+
+    const iframe = document.createElement("iframe");
+    iframe.id = "vettech-print-frame";
+    iframe.style.cssText = "position:fixed;top:-9999px;left:-9999px;width:400px;height:700px;border:0;";
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!doc) {
+      alert(
+        "Não foi possível abrir a janela de impressão.\n\n" +
+        "Por favor, permita popups para este site nas configurações do seu navegador e tente novamente.\n\n" +
+        "Como permitir: clique no ícone de bloqueio na barra de endereços > Permitir popups para este site.",
+      );
+      return;
+    }
+
+    doc.open();
+    doc.write(
+      `<!doctype html><html><head><meta charset="utf-8"><title>Cupom Fiscal • VetTECH</title><style>${cupomStyles}</style></head><body>${inner}</body></html>`,
+    );
+    doc.close();
+
+    // Small delay to ensure content renders before printing
+    setTimeout(() => {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+    }, 400);
+    return;
+  }
+
   w.document.write(
     `<!doctype html><html><head><meta charset="utf-8"><title>Cupom Fiscal • VetTECH</title><style>${cupomStyles}</style></head><body><div class="toolbar"><button onclick="window.print()">Imprimir Cupom</button></div>${inner}</body></html>`,
   );
